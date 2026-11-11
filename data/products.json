@@ -25,10 +25,15 @@
     "weight": "نص كيلو (500 جم)",
     "price": 690,
     "oldPrice": 750,
-    "image": "/images/tin-500.jpg",
+    "image": "/images/products/tin-500/cover.jpg",
     "tag": "",
     "available": true,
-    "images": []
+    "images": [
+      "/images/products/tin-500/1.jpg",
+      "/images/products/tin-500/2.jpg",
+      "/images/products/tin-500/3.jpg",
+      "/images/products/tin-500/4.jpg"
+    ]
   },
   {
     "id": "bag-100",
