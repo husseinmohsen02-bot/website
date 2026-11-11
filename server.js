@@ -19,7 +19,8 @@ const crypto = require('node:crypto');
 const CONFIG = {
   port: Number(process.env.PORT) || 3000,
   adminPassword: process.env.ADMIN_PASSWORD || 'change-me',
-  storeName: process.env.STORE_NAME || 'بن الأصالة',
+  storeName: process.env.STORE_NAME || 'حَبّة بُن',
+  storeNameEn: process.env.STORE_NAME_EN || 'Habbet Bonn',
   storeWhatsapp: (process.env.STORE_WHATSAPP || '').replace(/\D/g, ''),
   shippingFee: Number(process.env.SHIPPING_FEE ?? 50),
   freeShippingOver: Number(process.env.FREE_SHIPPING_OVER ?? 0),
@@ -326,6 +327,7 @@ async function handleApi(req, res, url) {
   if (req.method === 'GET' && p === '/api/config') {
     return send(res, 200, {
       storeName: CONFIG.storeName,
+      storeNameEn: CONFIG.storeNameEn,
       storeWhatsapp: CONFIG.storeWhatsapp,
       shippingFee: CONFIG.shippingFee,
       freeShippingOver: CONFIG.freeShippingOver,

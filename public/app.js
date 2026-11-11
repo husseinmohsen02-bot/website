@@ -26,7 +26,8 @@
       return;
     }
     document.querySelectorAll('#storeName, .store-name').forEach((el) => (el.textContent = config.storeName));
-    document.title = `${config.storeName} — بن تركي طازة`;
+    if (config.storeNameEn) $('#storeNameEn').textContent = config.storeNameEn;
+    document.title = `${config.storeName}${config.storeNameEn ? ` | ${config.storeNameEn}` : ''} — قهوة محمد أفندي التركي`;
     const rates = Object.values(config.shippingRates || {});
     const minRate = rates.length ? Math.min(...rates) : config.shippingFee;
     $('#shippingNote').textContent = `العرض لحد ما الكمية تخلص. مصاريف الشحن حسب المحافظة وبتبدأ من ${money(minRate)}`
