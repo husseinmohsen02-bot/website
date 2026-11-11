@@ -142,7 +142,7 @@
     const free = config.freeShippingOver > 0 && subtotal >= config.freeShippingOver;
     // الشحن بيتحسب بس بعد ما العميل يختار المحافظة
     const shipping = !lines.length || free ? 0 : shippingFor(governorate, area);
-    const weight = lines.reduce((s, l) => s + (Number(l.shipWeight) || 0) * l.qty, 0);
+    const weight = lines.reduce((s, l) => s + (Number(l.netWeight) || 0) * l.qty, 0);
     return { lines, subtotal, shipping, free, weight, overweight: weight > (config.overweightKg ?? 1) * 1000, total: subtotal + (shipping || 0), count: lines.reduce((s, l) => s + l.qty, 0) };
   }
 
@@ -221,7 +221,7 @@
     $('#checkoutSummary').innerHTML = t.lines.map((l) => `<div class="row"><span>${esc(l.name)} (${esc(l.weight)}) × ${l.qty.toLocaleString('ar-EG')}</span><span>${money(l.lineTotal)}</span></div>`).join('')
       + `<div class="row"><span>الشحن${governorate ? ` (${esc(governorate)}${area && area !== config.otherArea ? ` - ${esc(area)}` : ''})` : ''}</span><span>${ship}</span></div>`
       + `<div class="row total"><span>الإجمالي</span><b>${t.shipping === null && !t.free ? `${money(t.subtotal)} + الشحن` : money(t.total)}</b></div>`
-      + (t.overweight ? `<p class="weight-note">⚖️ وزن طلبك حوالي ${(t.weight / 1000).toLocaleString('ar-EG', { maximumFractionDigits: 1 })} كيلو. الطلبات اللي أكتر من كيلو ممكن شركة الشحن تضيف عليها مصاريف وزن زيادة بسيطة، وهنبلغك بيها قبل الشحن.</p>` : '');
+      + (t.overweight ? `<p class="weight-note">⚖️ وزن القهوة في طلبك ${(t.weight / 1000).toLocaleString('ar-EG', { maximumFractionDigits: 1 })} كيلو. الطلبات اللي أكتر من كيلو ممكن شركة الشحن تضيف عليها مصاريف وزن زيادة بسيطة، وهنبلغك بيها قبل الشحن.</p>` : '');
   }
 
   function openCheckout() {

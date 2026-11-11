@@ -202,7 +202,7 @@ function toCsv(orders) {
   };
   const header = ['رقم الطلب', 'التاريخ', 'الحالة', 'اسم العميل', 'الموبايل', 'موبايل إضافي',
     'المحافظة', 'المدينة/المنطقة', 'العنوان', 'المنتجات', 'عدد القطع', 'المنتجات (ج.م)',
-    'الشحن', 'المبلغ المطلوب تحصيله', 'الوزن التقريبي (كجم)', 'ملاحظات'];
+    'الشحن', 'المبلغ المطلوب تحصيله', 'الوزن الصافي (كجم)', 'ملاحظات'];
   const rows = orders.map((o) => [
     o.number,
     new Date(o.createdAt).toLocaleString('en-GB', { timeZone: 'Africa/Cairo' }),
@@ -290,13 +290,13 @@ async function createOrder(req, res) {
     if (!p || !p.available || !(qty >= 1 && qty <= 99)) continue;
     const existing = items.find((x) => x.id === p.id);
     if (existing) { existing.qty = Math.min(99, existing.qty + qty); existing.lineTotal = existing.qty * existing.price; continue; }
-    items.push({ id: p.id, name: p.name, weight: p.weight, price: p.price, qty, lineTotal: p.price * qty, shipWeight: Number(p.shipWeight) || 0 });
+    items.push({ id: p.id, name: p.name, weight: p.weight, price: p.price, qty, lineTotal: p.price * qty, netWeight: Number(p.netWeight) || 0 });
   }
   if (!items.length) errors.push('السلة فاضية');
   if (errors.length) return send(res, 422, { error: errors.join('\n'), errors });
 
   const subtotal = items.reduce((s, i) => s + i.lineTotal, 0);
-  const weightGrams = items.reduce((s, i) => s + i.shipWeight * i.qty, 0);
+  const weightGrams = items.reduce((s, i) => s + i.netWeight * i.qty, 0);
   const overweight = weightGrams > CONFIG.overweightKg * 1000;
   const shipping = calcShipping(subtotal, customer.governorate, customer.areaUnlisted ? null : customer.city);
   const orders = getOrders();

@@ -17,7 +17,7 @@
       "/images/products/tin-250/5.jpg",
       "/images/products/tin-250/6.jpg"
     ],
-    "shipWeight": 330
+    "netWeight": 250
   },
   {
     "id": "tin-500",
@@ -35,7 +35,7 @@
       "/images/products/tin-500/3.jpg",
       "/images/products/tin-500/4.jpg"
     ],
-    "shipWeight": 620
+    "netWeight": 500
   },
   {
     "id": "bag-100",
@@ -51,7 +51,7 @@
       "/images/products/bag-100/1.jpg",
       "/images/products/bag-100/2.jpg"
     ],
-    "shipWeight": 115
+    "netWeight": 100
   },
   {
     "id": "talqima-12",
@@ -67,7 +67,7 @@
       "/images/products/talqima-12/1.jpg",
       "/images/products/talqima-12/2.jpg"
     ],
-    "shipWeight": 110
+    "netWeight": 72
   },
   {
     "id": "box-tin250-kanaka",
@@ -84,6 +84,6 @@
       "/images/products/box-tin250-kanaka/2.jpg",
       "/images/products/box-tin250-kanaka/3.jpg"
     ],
-    "shipWeight": 650
+    "netWeight": 250
   }
 ]

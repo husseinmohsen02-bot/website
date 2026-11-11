@@ -70,7 +70,7 @@
           <div>
             <ul>${o.items.map((i) => `<li>${esc(i.name)} (${esc(i.weight)}) × ${i.qty} = ${money(i.lineTotal)}</li>`).join('')}</ul>
             <div>الشحن: ${money(o.shipping)} — <b>المطلوب تحصيله: ${money(o.total)}</b></div>
-            ${o.weightGrams ? `<div class="muted">الوزن التقريبي: ${(o.weightGrams / 1000).toFixed(2)} كجم${o.overweight ? ' <b style="color:var(--danger)">⚖️ أكتر من كيلو، ممكن يتضاف وزن زيادة</b>' : ''}</div>` : ''}
+            ${o.weightGrams ? `<div class="muted">الوزن الصافي: ${(o.weightGrams / 1000).toFixed(2)} كجم${o.overweight ? ' <b style="color:var(--danger)">⚖️ أكتر من كيلو، ممكن يتضاف وزن زيادة</b>' : ''}</div>` : ''}
           </div>
         </div>
         <div class="order-actions">
