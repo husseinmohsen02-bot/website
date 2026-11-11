@@ -33,9 +33,6 @@
     const minRate = rates.length ? Math.min(...rates) : config.shippingFee;
     $('#shippingNote').textContent = `العرض لحد ما الكمية تخلص. مصاريف الشحن حسب المحافظة وبتبدأ من ${money(minRate)}`
       + (config.freeShippingOver > 0 ? `، والشحن مجاني للطلبات فوق ${money(config.freeShippingOver)}` : '');
-    if (config.storeWhatsapp) {
-      $('#footerWa').innerHTML = `للاستفسار: <a href="https://wa.me/${esc(config.storeWhatsapp)}" target="_blank" rel="noopener">واتساب</a>`;
-    }
     $('#govSelect').insertAdjacentHTML('beforeend', Object.keys(config.shipping).map((g) => `<option>${esc(g)}</option>`).join(''));
 
     // شيل من السلة أي منتج مش متاح
