@@ -1,0 +1,62 @@
+[
+  {
+    "id": "classic-250",
+    "name": "بن تركي سادة",
+    "description": "تحميص متوسط، طحن ناعم جداً — الطعم الكلاسيكي اللي بتحبه.",
+    "weight": "250 جم",
+    "price": 180,
+    "image": "",
+    "tag": "الأكثر مبيعاً",
+    "available": true
+  },
+  {
+    "id": "classic-500",
+    "name": "بن تركي سادة",
+    "description": "تحميص متوسط، طحن ناعم جداً — عبوة اقتصادية.",
+    "weight": "500 جم",
+    "price": 340,
+    "image": "",
+    "tag": "",
+    "available": true
+  },
+  {
+    "id": "mehawag-250",
+    "name": "بن تركي محوج",
+    "description": "مع حبهان طازة ومستكة — ريحة تملا البيت.",
+    "weight": "250 جم",
+    "price": 200,
+    "image": "",
+    "tag": "",
+    "available": true
+  },
+  {
+    "id": "dark-250",
+    "name": "بن تركي غامق",
+    "description": "تحميص غامق لمحبي الطعم القوي والوش التقيل.",
+    "weight": "250 جم",
+    "price": 190,
+    "image": "",
+    "tag": "",
+    "available": true
+  },
+  {
+    "id": "light-250",
+    "name": "بن تركي فاتح",
+    "description": "تحميص فاتح، طعم ناعم وحموضة خفيفة.",
+    "weight": "250 جم",
+    "price": 180,
+    "image": "",
+    "tag": "",
+    "available": true
+  },
+  {
+    "id": "gift-box",
+    "name": "بوكس هدية",
+    "description": "3 أنواع × 125 جم في علبة هدية أنيقة.",
+    "weight": "375 جم",
+    "price": 320,
+    "image": "",
+    "tag": "جديد",
+    "available": true
+  }
+]

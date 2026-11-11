@@ -1,0 +1,234 @@
+(() => {
+  const $ = (s, el = document) => el.querySelector(s);
+  const money = (n) => `${Number(n).toLocaleString('ar-EG')} ج.م`;
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const CART_KEY = 'coffee_cart_v1';
+  const CUSTOMER_KEY = 'coffee_customer_v1';
+
+  let config = { shippingFee: 0, freeShippingOver: 0, governorates: [] };
+  let products = [];
+  let cart = load(CART_KEY, {}); // { productId: qty }
+
+  function load(k, fb) { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } }
+  function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* ignore */ } }
+
+  const coffeeSvg = '<svg class="ph" viewBox="0 0 64 64" aria-hidden="true"><path fill="#f2c98a" d="M10 22h36v14a16 16 0 0 1-16 16h-4a16 16 0 0 1-16-16V22Zm36 4h3a7 7 0 0 1 0 14h-4.3a18 18 0 0 0 1.3-6v-8Zm0 4v2a12 12 0 0 1-.2 4H49a3 3 0 0 0 0-6h-3ZM6 56h44v3H6v-3Z"/><path fill="#fff7ec" opacity=".7" d="M20 6c3 3-3 6 0 10m8-10c3 3-3 6 0 10m8-10c3 3-3 6 0 10" stroke="#fff7ec" stroke-width="2.5" fill-opacity="0" stroke-linecap="round"/></svg>';
+
+  // ---------- تحميل البيانات ----------
+  async function init() {
+    $('#year').textContent = new Date().getFullYear();
+    try {
+      const [c, p] = await Promise.all([fetch('/api/config').then((r) => r.json()), fetch('/api/products').then((r) => r.json())]);
+      config = c; products = p;
+    } catch {
+      $('#productGrid').innerHTML = '<p class="muted">حصلت مشكلة في تحميل المنتجات. حدّث الصفحة.</p>';
+      return;
+    }
+    document.querySelectorAll('#storeName, .store-name').forEach((el) => (el.textContent = config.storeName));
+    document.title = `${config.storeName} — بن تركي طازة`;
+    $('#shippingNote').textContent = config.freeShippingOver > 0
+      ? `مصاريف الشحن ${money(config.shippingFee)} — شحن مجاني للطلبات فوق ${money(config.freeShippingOver)}`
+      : `مصاريف الشحن ${money(config.shippingFee)} لكل المحافظات`;
+    if (config.storeWhatsapp) {
+      $('#footerWa').innerHTML = `للاستفسار: <a href="https://wa.me/${esc(config.storeWhatsapp)}" target="_blank" rel="noopener">واتساب</a>`;
+    }
+    $('#govSelect').insertAdjacentHTML('beforeend', config.governorates.map((g) => `<option>${esc(g)}</option>`).join(''));
+
+    // شيل من السلة أي منتج مش متاح
+    const ids = new Set(products.map((p) => p.id));
+    for (const id of Object.keys(cart)) if (!ids.has(id)) delete cart[id];
+    persist();
+    renderProducts();
+    renderCart();
+  }
+
+  // ---------- المنتجات ----------
+  function renderProducts() {
+    if (!products.length) { $('#productGrid').innerHTML = '<p class="muted">مفيش منتجات متاحة حالياً.</p>'; return; }
+    $('#productGrid').innerHTML = products.map((p) => `
+      <article class="card" data-id="${esc(p.id)}">
+        <div class="card-media">
+          ${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : coffeeSvg}
+          ${p.tag ? `<span class="card-tag">${esc(p.tag)}</span>` : ''}
+        </div>
+        <div class="card-body">
+          <h3>${esc(p.name)}</h3>
+          <span class="weight">${esc(p.weight)}</span>
+          <p>${esc(p.description)}</p>
+          <div class="card-foot">
+            <span class="price">${Number(p.price).toLocaleString('ar-EG')} <small>ج.م</small></span>
+            <div class="card-action">${actionHtml(p.id)}</div>
+          </div>
+        </div>
+      </article>`).join('');
+  }
+
+  function actionHtml(id) {
+    const q = cart[id] || 0;
+    return q > 0
+      ? `<div class="qty"><button data-inc="${esc(id)}" aria-label="زيادة">+</button><span>${q.toLocaleString('ar-EG')}</span><button data-dec="${esc(id)}" aria-label="تقليل">−</button></div>`
+      : `<button class="btn btn-dark" data-add="${esc(id)}">أضف للسلة</button>`;
+  }
+
+  function refreshCardAction(id) {
+    const card = document.querySelector(`.card[data-id="${CSS.escape(id)}"] .card-action`);
+    if (card) card.innerHTML = actionHtml(id);
+  }
+
+  // ---------- السلة ----------
+  function persist() { save(CART_KEY, cart); }
+
+  function setQty(id, qty) {
+    qty = Math.max(0, Math.min(99, qty));
+    if (qty === 0) delete cart[id]; else cart[id] = qty;
+    persist();
+    refreshCardAction(id);
+    renderCart();
+  }
+
+  function totals() {
+    const lines = Object.entries(cart).map(([id, qty]) => {
+      const p = products.find((x) => x.id === id);
+      return p ? { ...p, qty, lineTotal: p.price * qty } : null;
+    }).filter(Boolean);
+    const subtotal = lines.reduce((s, l) => s + l.lineTotal, 0);
+    const shipping = !lines.length ? 0 : (config.freeShippingOver > 0 && subtotal >= config.freeShippingOver ? 0 : config.shippingFee);
+    return { lines, subtotal, shipping, total: subtotal + shipping, count: lines.reduce((s, l) => s + l.qty, 0) };
+  }
+
+  function renderCart() {
+    const t = totals();
+    const badge = $('#cartCount');
+    badge.textContent = t.count.toLocaleString('ar-EG');
+    badge.classList.remove('bump'); void badge.offsetWidth; badge.classList.add('bump');
+
+    if (!t.lines.length) {
+      $('#cartItems').innerHTML = '<div class="empty"><div class="big">🛒</div><p>السلة فاضية</p><button class="btn btn-dark" data-close>تصفح المنتجات</button></div>';
+      $('#cartFoot').hidden = true;
+      return;
+    }
+    $('#cartFoot').hidden = false;
+    $('#cartItems').innerHTML = t.lines.map((l) => `
+      <div class="cart-item">
+        <div><h4>${esc(l.name)}</h4><div class="meta">${esc(l.weight)} • ${money(l.price)}</div></div>
+        <div class="line">${money(l.lineTotal)}</div>
+        <div class="qty"><button data-inc="${esc(l.id)}" aria-label="زيادة">+</button><span>${l.qty.toLocaleString('ar-EG')}</span><button data-dec="${esc(l.id)}" aria-label="تقليل">−</button></div>
+        <button class="remove" data-remove="${esc(l.id)}">حذف</button>
+      </div>`).join('');
+    $('#cartSubtotal').textContent = money(t.subtotal);
+    $('#cartShipping').textContent = t.shipping === 0 ? 'مجاني 🎉' : money(t.shipping);
+    $('#cartTotal').textContent = money(t.total);
+    const left = config.freeShippingOver - t.subtotal;
+    $('#freeHint').textContent = config.freeShippingOver > 0 && left > 0 ? `فاضلك ${money(left)} وتاخد شحن مجاني!` : '';
+  }
+
+  // ---------- فتح وإغلاق ----------
+  function openCart() {
+    $('#cartDrawer').classList.add('open');
+    $('#cartDrawer').setAttribute('aria-hidden', 'false');
+    $('#overlay').hidden = false;
+    document.body.classList.add('locked');
+  }
+  function closeAll() {
+    $('#cartDrawer').classList.remove('open');
+    $('#cartDrawer').setAttribute('aria-hidden', 'true');
+    $('#overlay').hidden = true;
+    $('#checkoutModal').hidden = true;
+    $('#successModal').hidden = true;
+    document.body.classList.remove('locked');
+  }
+
+  function openCheckout() {
+    const t = totals();
+    if (!t.lines.length) return;
+    closeAll();
+    $('#checkoutSummary').innerHTML = t.lines.map((l) => `<div class="row"><span>${esc(l.name)} (${esc(l.weight)}) × ${l.qty.toLocaleString('ar-EG')}</span><span>${money(l.lineTotal)}</span></div>`).join('')
+      + `<div class="row"><span>الشحن</span><span>${t.shipping === 0 ? 'مجاني' : money(t.shipping)}</span></div>`
+      + `<div class="row total"><span>الإجمالي</span><b>${money(t.total)}</b></div>`;
+    // استرجاع بيانات العميل من آخر طلب
+    const saved = load(CUSTOMER_KEY, {});
+    const form = $('#checkoutForm');
+    for (const [k, v] of Object.entries(saved)) if (form.elements[k] && !form.elements[k].value) form.elements[k].value = v;
+    $('#formError').textContent = '';
+    $('#checkoutModal').hidden = false;
+    document.body.classList.add('locked');
+    setTimeout(() => form.elements.name.focus(), 50);
+  }
+
+  function toast(msg) {
+    const el = $('#toast');
+    el.textContent = msg; el.classList.add('show');
+    clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), 1800);
+  }
+
+  // ---------- إرسال الطلب ----------
+  const phoneOk = (v) => /^(\+?20|0)?1[0125]\d{8}$/.test(String(v).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[\s-]/g, ''));
+
+  async function submitOrder(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = Object.fromEntries(new FormData(form).entries());
+    const errs = [];
+    form.querySelectorAll('.invalid').forEach((el) => el.classList.remove('invalid'));
+    const bad = (name, msg) => { errs.push(msg); form.elements[name].classList.add('invalid'); };
+    if ((data.name || '').trim().length < 3) bad('name', 'اكتب الاسم بالكامل');
+    if (!phoneOk(data.phone)) bad('phone', 'رقم الموبايل غير صحيح (مثال: 01012345678)');
+    if (data.phone2 && !phoneOk(data.phone2)) bad('phone2', 'الرقم الإضافي غير صحيح');
+    if (!data.governorate) bad('governorate', 'اختار المحافظة');
+    if ((data.city || '').trim().length < 2) bad('city', 'اكتب المدينة أو المنطقة');
+    if ((data.address || '').trim().length < 8) bad('address', 'اكتب العنوان بالتفصيل');
+    if (errs.length) { $('#formError').textContent = errs.join('\n'); return; }
+
+    const btn = $('#submitOrder');
+    btn.disabled = true; btn.textContent = 'جاري إرسال الطلب…';
+    $('#formError').textContent = '';
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customer: data, items: Object.entries(cart).map(([id, qty]) => ({ id, qty })) }),
+      });
+      const out = await res.json();
+      if (!res.ok) throw new Error(out.error || 'حصل خطأ');
+
+      const { notes, ...rememberMe } = data;
+      save(CUSTOMER_KEY, rememberMe);
+      cart = {}; persist(); renderProducts(); renderCart();
+      form.elements.notes.value = '';
+      showSuccess(out);
+    } catch (err) {
+      $('#formError').textContent = err.message || 'حصل خطأ في الاتصال، حاول تاني';
+    } finally {
+      btn.disabled = false; btn.textContent = 'تأكيد الطلب — الدفع عند الاستلام';
+    }
+  }
+
+  function showSuccess(out) {
+    closeAll();
+    $('#orderNumber').textContent = `#${out.number}`;
+    $('#successMsg').textContent = out.whatsappSent
+      ? `بعتنالك رسالة تأكيد على واتساب بتفاصيل الطلب. الإجمالي ${money(out.total)} يُدفع عند الاستلام.`
+      : `الإجمالي ${money(out.total)} يُدفع عند الاستلام. اضغط الزرار عشان تبعتلنا تأكيد الطلب على واتساب وتوصلك كل التحديثات.`;
+    const wa = $('#waLink');
+    if (out.storeWhatsappLink && !out.whatsappSent) { wa.href = out.storeWhatsappLink; wa.hidden = false; } else { wa.hidden = true; }
+    $('#successModal').hidden = false;
+    document.body.classList.add('locked');
+  }
+
+  // ---------- الأحداث ----------
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('button, a, .overlay, .modal');
+    if (!t) return;
+    if (t.dataset.add) { setQty(t.dataset.add, 1); toast('اتضاف للسلة ✓'); return; }
+    if (t.dataset.inc) { setQty(t.dataset.inc, (cart[t.dataset.inc] || 0) + 1); return; }
+    if (t.dataset.dec) { setQty(t.dataset.dec, (cart[t.dataset.dec] || 0) - 1); return; }
+    if (t.dataset.remove) { setQty(t.dataset.remove, 0); return; }
+    if (t.hasAttribute('data-close') || t.id === 'overlay' || (t.classList.contains('modal') && e.target === t)) { closeAll(); return; }
+    if (t.id === 'openCart') { openCart(); return; }
+    if (t.id === 'toCheckout') { openCheckout(); }
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAll(); });
+  $('#checkoutForm').addEventListener('submit', submitOrder);
+
+  init();
+})();

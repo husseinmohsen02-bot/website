@@ -1,0 +1,14 @@
+{
+  "name": "turkish-coffee-store",
+  "version": "1.0.0",
+  "description": "متجر البن التركي - طلب أونلاين مع سلة وتأكيد واتساب ولوحة إدارة الطلبات",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}

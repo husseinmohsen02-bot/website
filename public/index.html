@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>بن تركي طازة — اطلب أونلاين</title>
+  <meta name="description" content="بن تركي طازة محمّص ومطحون يومياً — اطلب أونلاين والدفع عند الاستلام.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a href="/" class="brand"><span class="brand-mark">☕</span> <span id="storeName">بن الأصالة</span></a>
+      <button class="cart-btn" id="openCart" aria-label="السلة">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM5.2 4H2V2h4.8l.9 2H21a1 1 0 0 1 .96 1.27l-2.4 8.4A2 2 0 0 1 17.64 15H8.1l-1 2H19v2H5.6a1 1 0 0 1-.89-1.45L6.3 14.4 3.9 4Z"/></svg>
+        <span>السلة</span>
+        <span class="badge" id="cartCount">0</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero-inner">
+      <div>
+        <h1>بن تركي طازة<br><span>محمّص ومطحون يومياً</span></h1>
+        <p>اختار نوعك المفضل، ضيفه للسلة، وهيوصلك لحد باب البيت. الدفع عند الاستلام.</p>
+        <a href="#products" class="btn btn-primary">تسوّق دلوقتي</a>
+      </div>
+      <ul class="perks">
+        <li><b>🚚</b> شحن لكل المحافظات</li>
+        <li><b>💵</b> الدفع عند الاستلام</li>
+        <li><b>🌿</b> بن طازة بدون إضافات</li>
+      </ul>
+    </div>
+  </section>
+
+  <main class="container" id="products">
+    <h2 class="section-title">منتجاتنا</h2>
+    <p class="shipping-note" id="shippingNote"></p>
+    <div class="grid" id="productGrid" aria-live="polite">
+      <p class="muted">جاري تحميل المنتجات…</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>© <span id="year"></span> <span class="store-name"></span> — كل الحقوق محفوظة</p>
+      <p id="footerWa"></p>
+    </div>
+  </footer>
+
+  <!-- السلة -->
+  <div class="overlay" id="overlay" hidden></div>
+  <aside class="drawer" id="cartDrawer" aria-hidden="true" aria-label="سلة المشتريات">
+    <div class="drawer-head">
+      <h3>سلة المشتريات</h3>
+      <button class="icon-btn" data-close aria-label="إغلاق">✕</button>
+    </div>
+    <div class="drawer-body" id="cartItems"></div>
+    <div class="drawer-foot" id="cartFoot">
+      <div class="row"><span>المنتجات</span><b id="cartSubtotal">0 ج.م</b></div>
+      <div class="row"><span>الشحن</span><b id="cartShipping">0 ج.م</b></div>
+      <div class="row total"><span>الإجمالي</span><b id="cartTotal">0 ج.م</b></div>
+      <p class="free-hint" id="freeHint"></p>
+      <button class="btn btn-primary btn-block" id="toCheckout">إتمام الطلب</button>
+    </div>
+  </aside>
+
+  <!-- بيانات العميل -->
+  <div class="modal" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle" hidden>
+    <div class="modal-card">
+      <div class="drawer-head">
+        <h3 id="checkoutTitle">بيانات التوصيل</h3>
+        <button class="icon-btn" data-close aria-label="إغلاق">✕</button>
+      </div>
+      <form id="checkoutForm" novalidate>
+        <label>الاسم بالكامل *
+          <input name="name" required minlength="3" autocomplete="name" placeholder="مثال: أحمد محمد">
+        </label>
+        <div class="two">
+          <label>رقم الموبايل (واتساب) *
+            <input name="phone" required inputmode="tel" autocomplete="tel" placeholder="01012345678" dir="ltr">
+          </label>
+          <label>رقم إضافي (اختياري)
+            <input name="phone2" inputmode="tel" placeholder="01112345678" dir="ltr">
+          </label>
+        </div>
+        <div class="two">
+          <label>المحافظة *
+            <select name="governorate" required id="govSelect"><option value="">اختار…</option></select>
+          </label>
+          <label>المدينة / المنطقة *
+            <input name="city" required placeholder="مثال: مدينة نصر">
+          </label>
+        </div>
+        <label>العنوان بالتفصيل *
+          <textarea name="address" required rows="2" placeholder="الشارع، رقم العمارة، الدور، الشقة، علامة مميزة"></textarea>
+        </label>
+        <label>ملاحظات (اختياري)
+          <textarea name="notes" rows="2" placeholder="مثلاً: ميعاد مناسب للتوصيل"></textarea>
+        </label>
+        <div class="summary" id="checkoutSummary"></div>
+        <p class="form-error" id="formError" role="alert"></p>
+        <button class="btn btn-primary btn-block" type="submit" id="submitOrder">تأكيد الطلب — الدفع عند الاستلام</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- تم الطلب -->
+  <div class="modal" id="successModal" role="dialog" aria-modal="true" hidden>
+    <div class="modal-card success">
+      <div class="check">✓</div>
+      <h3>تم تسجيل طلبك بنجاح!</h3>
+      <p>رقم الطلب: <b id="orderNumber"></b></p>
+      <p id="successMsg" class="muted"></p>
+      <a class="btn btn-wa btn-block" id="waLink" target="_blank" rel="noopener" hidden>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12.04 2a9.9 9.9 0 0 0-8.5 15l-1.4 5 5.1-1.34A9.9 9.9 0 1 0 12.04 2Zm5.8 14.06c-.24.68-1.42 1.3-1.95 1.34-.5.05-.97.23-3.27-.68-2.77-1.09-4.52-3.92-4.66-4.1-.13-.18-1.1-1.47-1.1-2.8 0-1.33.7-1.98.95-2.25.24-.27.53-.34.71-.34h.51c.16 0 .39-.06.6.46.24.55.78 1.9.85 2.04.07.14.11.3.02.48-.09.18-.14.3-.27.46-.14.16-.29.36-.41.48-.14.14-.28.29-.12.56.16.27.7 1.16 1.51 1.88 1.04.93 1.92 1.21 2.19 1.35.27.14.43.11.59-.07.16-.18.68-.8.86-1.07.18-.27.36-.23.6-.14.25.09 1.58.75 1.85.88.27.14.45.2.52.32.07.11.07.66-.17 1.33Z"/></svg>
+        <span>ابعت تأكيد الطلب على واتساب</span>
+      </a>
+      <button class="btn btn-ghost btn-block" data-close>رجوع للمتجر</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
