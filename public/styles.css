@@ -30,6 +30,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .topbar-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
 .brand { font-weight: 800; font-size: 1.25rem; color: var(--brand-dark); text-decoration: none; display: flex; gap: 8px; align-items: center; }
 .brand-mark { width: 40px; height: 40px; border-radius: 50%; box-shadow: 0 2px 6px rgba(60, 35, 15, .25); }
+.social { display: flex; justify-content: center; gap: 12px; margin: 0 0 12px; }
+.footer .social a { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: var(--brand); color: #f2c98a; transition: background .2s, transform .2s; }
+.footer .social a:hover { background: var(--brand-dark); transform: translateY(-2px); }
 .footer-logo { width: 96px; height: 96px; border-radius: 16px; margin: 0 auto 12px; }
 .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
 .brand-text small { font-size: .72rem; font-weight: 600; color: var(--muted); letter-spacing: .06em; }
