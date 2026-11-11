@@ -21,7 +21,7 @@ const CONFIG = {
   adminPassword: process.env.ADMIN_PASSWORD || 'change-me',
   storeName: process.env.STORE_NAME || 'حَبّة بُن',
   storeNameEn: process.env.STORE_NAME_EN || 'Habbet Bonn',
-  storeWhatsapp: (process.env.STORE_WHATSAPP || '').replace(/\D/g, ''),
+  storeWhatsapp: (process.env.STORE_WHATSAPP || '971553626134').replace(/\D/g, ''),
   shippingFee: Number(process.env.SHIPPING_FEE ?? 50),
   freeShippingOver: Number(process.env.FREE_SHIPPING_OVER ?? 0),
   waToken: process.env.WHATSAPP_TOKEN || '',
