@@ -29,7 +29,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .topbar { position: sticky; top: 0; z-index: 20; background: rgba(250, 246, 241, .92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
 .topbar-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
 .brand { font-weight: 800; font-size: 1.25rem; color: var(--brand-dark); text-decoration: none; display: flex; gap: 8px; align-items: center; }
-.brand-mark { font-size: 1.4rem; }
+.brand-mark { width: 40px; height: 40px; border-radius: 50%; box-shadow: 0 2px 6px rgba(60, 35, 15, .25); }
+.footer-logo { width: 96px; height: 96px; border-radius: 16px; margin: 0 auto 12px; }
 .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
 .brand-text small { font-size: .72rem; font-weight: 600; color: var(--muted); letter-spacing: .06em; }
 .cart-btn { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--surface); padding: 8px 14px; border-radius: 999px; cursor: pointer; font-weight: 600; }
