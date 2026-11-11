@@ -54,14 +54,17 @@
   {
     "id": "talqima-12",
     "name": "علبة تلقيمة",
-    "description": "12 عبوة تلقيمة، كل عبوة تكفي فنجان. سهلة وجاهزة في أي وقت.",
-    "weight": "12 عبوة",
+    "description": "12 عبوة تلقيمة × 6 جم، كل عبوة تكفي فنجان. سهلة وجاهزة في أي وقت، ومناسبة للشغل والسفر.",
+    "weight": "12 عبوة × 6 جم",
     "price": 160,
     "oldPrice": 180,
-    "image": "",
+    "image": "/images/products/talqima-12/cover.jpg",
     "tag": "",
     "available": true,
-    "images": []
+    "images": [
+      "/images/products/talqima-12/1.jpg",
+      "/images/products/talqima-12/2.jpg"
+    ]
   },
   {
     "id": "box-tin250-kanaka",
