@@ -62,7 +62,7 @@
           <div>
             <div>📞 <a href="tel:${esc(localPhone(o.customer.phone))}" dir="ltr">${esc(localPhone(o.customer.phone))}</a>
               ${o.customer.phone2 ? ` / <span dir="ltr">${esc(localPhone(o.customer.phone2))}</span>` : ''}</div>
-            <div>📍 ${esc(o.customer.governorate)} — ${esc(o.customer.city)}</div>
+            <div>📍 ${esc(o.customer.governorate)} — ${esc(o.customer.city)}${o.customer.areaUnlisted ? ' <b style="color:var(--danger)">⚠️ منطقة مش في قايمة الشحن، اتأكد من السعر</b>' : ''}</div>
             <div>${esc(o.customer.address)}</div>
             ${o.customer.notes ? `<div>📝 ${esc(o.customer.notes)}</div>` : ''}
             <div class="wa-tag">${o.whatsapp?.sent ? '✅ اتبعت تأكيد واتساب تلقائي' : '— تأكيد الواتساب التلقائي غير مفعّل'}</div>

@@ -5,8 +5,9 @@
   const CART_KEY = 'coffee_cart_v1';
   const CUSTOMER_KEY = 'coffee_customer_v1';
 
-  let config = { shippingFee: 0, freeShippingOver: 0, governorates: [], shippingRates: {} };
+  let config = { shippingFee: 0, freeShippingOver: 0, shipping: {}, otherArea: '__other__' };
   let governorate = '';
+  let area = '';
   let products = [];
   let cart = load(CART_KEY, {}); // { productId: qty }
 
@@ -28,14 +29,14 @@
     document.querySelectorAll('#storeName, .store-name').forEach((el) => (el.textContent = config.storeName));
     if (config.storeNameEn) $('#storeNameEn').textContent = config.storeNameEn;
     document.title = `${config.storeName}${config.storeNameEn ? ` | ${config.storeNameEn}` : ''} — قهوة محمد أفندي التركي`;
-    const rates = Object.values(config.shippingRates || {});
+    const rates = Object.values(config.shipping || {}).flatMap((g) => Object.values(g.areas));
     const minRate = rates.length ? Math.min(...rates) : config.shippingFee;
     $('#shippingNote').textContent = `العرض لحد ما الكمية تخلص. مصاريف الشحن حسب المحافظة وبتبدأ من ${money(minRate)}`
       + (config.freeShippingOver > 0 ? `، والشحن مجاني للطلبات فوق ${money(config.freeShippingOver)}` : '');
     if (config.storeWhatsapp) {
       $('#footerWa').innerHTML = `للاستفسار: <a href="https://wa.me/${esc(config.storeWhatsapp)}" target="_blank" rel="noopener">واتساب</a>`;
     }
-    $('#govSelect').insertAdjacentHTML('beforeend', config.governorates.map((g) => `<option>${esc(g)}</option>`).join(''));
+    $('#govSelect').insertAdjacentHTML('beforeend', Object.keys(config.shipping).map((g) => `<option>${esc(g)}</option>`).join(''));
 
     // شيل من السلة أي منتج مش متاح
     const ids = new Set(products.map((p) => p.id));
@@ -140,8 +141,33 @@
     const subtotal = lines.reduce((s, l) => s + l.lineTotal, 0);
     const free = config.freeShippingOver > 0 && subtotal >= config.freeShippingOver;
     // الشحن بيتحسب بس بعد ما العميل يختار المحافظة
-    const shipping = !lines.length || free ? 0 : (governorate ? (config.shippingRates[governorate] ?? config.shippingFee) : null);
+    const shipping = !lines.length || free ? 0 : shippingFor(governorate, area);
     return { lines, subtotal, shipping, free, total: subtotal + (shipping || 0), count: lines.reduce((s, l) => s + l.qty, 0) };
+  }
+
+  // سعر الشحن للمنطقة (أو السعر الأساسي للمحافظة لو "منطقة تانية")، وnull لو لسه ما اختارش
+  function shippingFor(gov, ar) {
+    const g = config.shipping[gov];
+    if (!g || !ar) return null;
+    return ar === config.otherArea ? g.default : (g.areas[ar] ?? null);
+  }
+
+  function fillAreas(selected = '') {
+    const sel = $('#areaSelect');
+    const g = config.shipping[governorate];
+    if (!g) { sel.innerHTML = '<option value="">اختار المحافظة الأول</option>'; sel.disabled = true; area = ''; toggleOther(); return; }
+    sel.disabled = false;
+    sel.innerHTML = '<option value="">اختار المنطقة…</option>'
+      + Object.entries(g.areas).map(([a, price]) => `<option value="${esc(a)}">${esc(a)} — شحن ${money(price)}</option>`).join('')
+      + `<option value="${esc(config.otherArea)}">منطقة تانية مش موجودة</option>`;
+    sel.value = selected && (g.areas[selected] !== undefined || selected === config.otherArea) ? selected : '';
+    area = sel.value;
+    toggleOther();
+  }
+  function toggleOther() {
+    const other = area === config.otherArea;
+    $('#areaOtherWrap').hidden = !other;
+    $('#checkoutForm').elements.areaOther.required = other;
   }
 
   function renderCart() {
@@ -190,9 +216,9 @@
 
   function renderSummary() {
     const t = totals();
-    const ship = t.free ? 'مجاني' : t.shipping === null ? 'اختار المحافظة' : money(t.shipping);
+    const ship = t.free ? 'مجاني' : t.shipping === null ? (governorate ? 'اختار المنطقة' : 'اختار المحافظة') : money(t.shipping) + (area === config.otherArea ? ' (تقريبي)' : '');
     $('#checkoutSummary').innerHTML = t.lines.map((l) => `<div class="row"><span>${esc(l.name)} (${esc(l.weight)}) × ${l.qty.toLocaleString('ar-EG')}</span><span>${money(l.lineTotal)}</span></div>`).join('')
-      + `<div class="row"><span>الشحن${governorate ? ` (${esc(governorate)})` : ''}</span><span>${ship}</span></div>`
+      + `<div class="row"><span>الشحن${governorate ? ` (${esc(governorate)}${area && area !== config.otherArea ? ` - ${esc(area)}` : ''})` : ''}</span><span>${ship}</span></div>`
       + `<div class="row total"><span>الإجمالي</span><b>${t.shipping === null && !t.free ? `${money(t.subtotal)} + الشحن` : money(t.total)}</b></div>`;
   }
 
@@ -203,8 +229,10 @@
     // استرجاع بيانات العميل من آخر طلب
     const saved = load(CUSTOMER_KEY, {});
     const form = $('#checkoutForm');
-    for (const [k, v] of Object.entries(saved)) if (form.elements[k] && !form.elements[k].value) form.elements[k].value = v;
+    for (const [k, v] of Object.entries(saved)) if (k !== 'area' && form.elements[k] && !form.elements[k].value) form.elements[k].value = v;
+    if (!config.shipping[form.elements.governorate.value]) form.elements.governorate.value = '';
     governorate = form.elements.governorate.value;
+    fillAreas(form.elements.area.value || saved.area);
     renderSummary();
     $('#formError').textContent = '';
     $('#checkoutModal').hidden = false;
@@ -232,7 +260,8 @@
     if (!phoneOk(data.phone)) bad('phone', 'رقم الموبايل غير صحيح (مثال: 01012345678)');
     if (data.phone2 && !phoneOk(data.phone2)) bad('phone2', 'الرقم الإضافي غير صحيح');
     if (!data.governorate) bad('governorate', 'اختار المحافظة');
-    if ((data.city || '').trim().length < 2) bad('city', 'اكتب المدينة أو المنطقة');
+    if (data.governorate && !data.area) bad('area', 'اختار المنطقة');
+    if (data.area === config.otherArea && (data.areaOther || '').trim().length < 2) bad('areaOther', 'اكتب اسم المنطقة');
     if ((data.address || '').trim().length < 8) bad('address', 'اكتب العنوان بالتفصيل');
     if (errs.length) { $('#formError').textContent = errs.join('\n'); return; }
 
@@ -301,7 +330,8 @@
     if (Math.abs(dx) > 40) stepPm(dx > 0 ? 1 : -1);
   });
   $('#checkoutForm').addEventListener('submit', submitOrder);
-  $('#govSelect').addEventListener('change', (e) => { governorate = e.target.value; renderSummary(); });
+  $('#govSelect').addEventListener('change', (e) => { governorate = e.target.value; fillAreas(); renderSummary(); });
+  $('#areaSelect').addEventListener('change', (e) => { area = e.target.value; toggleOther(); renderSummary(); });
 
   init();
 })();

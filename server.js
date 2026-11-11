@@ -36,12 +36,8 @@ const PRODUCTS_FILE = path.join(DATA_DIR, 'products.json');
 const ORDERS_FILE = path.join(DATA_DIR, 'orders.json');
 const SHIPPING_FILE = path.join(DATA_DIR, 'shipping.json');
 
-const GOVERNORATES = [
-  'القاهرة', 'الجيزة', 'الإسكندرية', 'القليوبية', 'الشرقية', 'الدقهلية', 'الغربية',
-  'المنوفية', 'البحيرة', 'كفر الشيخ', 'دمياط', 'بورسعيد', 'الإسماعيلية', 'السويس',
-  'الفيوم', 'بني سويف', 'المنيا', 'أسيوط', 'سوهاج', 'قنا', 'الأقصر', 'أسوان',
-  'البحر الأحمر', 'الوادي الجديد', 'مطروح', 'شمال سيناء', 'جنوب سيناء',
-];
+// اختيار "منطقة تانية" لو منطقة العميل مش في قايمة شركة الشحن
+const OTHER_AREA = '__other__';
 
 const STATUSES = ['new', 'confirmed', 'shipped', 'delivered', 'cancelled'];
 
@@ -55,12 +51,18 @@ function writeJsonAtomic(file, data) {
   fs.renameSync(tmp, file);
 }
 const getProducts = () => readJson(PRODUCTS_FILE, []);
+// أسعار الشحن لكل محافظة ومنطقة، من data/shipping.json (بيتعمل من شيت شركة الشحن)
+// الشكل: { "القاهرة": { "default": 80, "areas": { "المعادي": 80, ... } }, ... }
 function getShipping() {
   const s = readJson(SHIPPING_FILE, {});
-  const def = Number.isFinite(Number(s.default)) ? Number(s.default) : CONFIG.shippingFee;
-  const rates = {};
-  for (const g of GOVERNORATES) rates[g] = Number.isFinite(Number(s.rates?.[g])) ? Number(s.rates[g]) : def;
-  return rates;
+  const out = {};
+  for (const [g, v] of Object.entries(s.governorates || {})) {
+    const areas = {};
+    for (const [a, price] of Object.entries(v.areas || {})) if (Number.isFinite(Number(price))) areas[a] = Number(price);
+    const def = Number.isFinite(Number(v.default)) ? Number(v.default) : CONFIG.shippingFee;
+    out[g] = { default: def, areas };
+  }
+  return out;
 }
 const getOrders = () => readJson(ORDERS_FILE, []);
 const saveOrders = (orders) => writeJsonAtomic(ORDERS_FILE, orders);
@@ -119,9 +121,11 @@ function safeEqual(a, b) {
 }
 const isAdmin = (req) => safeEqual(req.headers['x-admin-password'] || '', CONFIG.adminPassword);
 
-function calcShipping(subtotal, governorate) {
+function calcShipping(subtotal, governorate, area) {
   if (CONFIG.freeShippingOver > 0 && subtotal >= CONFIG.freeShippingOver) return 0;
-  return getShipping()[governorate] ?? CONFIG.shippingFee;
+  const g = getShipping()[governorate];
+  if (!g) return CONFIG.shippingFee;
+  return g.areas[area] ?? g.default;
 }
 
 // ---------- رسالة واتساب ----------
@@ -211,7 +215,7 @@ function toCsv(orders) {
     o.subtotal,
     o.shipping,
     o.total,
-    o.customer.notes,
+    [o.customer.areaUnlisted ? '⚠️ منطقة مش في قايمة الشحن' : '', o.customer.notes].filter(Boolean).join(' — '),
   ]);
   // BOM عشان Excel يقرأ العربي صح
   return '﻿' + [header, ...rows].map((r) => r.map(esc).join(',')).join('\r\n');
@@ -251,7 +255,8 @@ async function createOrder(req, res) {
     phone: normalizePhone(c.phone),
     phone2: c.phone2 ? normalizePhone(c.phone2) : '',
     governorate: clean(c.governorate, 40),
-    city: clean(c.city, 80),
+    city: '',
+    areaUnlisted: false,
     address: clean(c.address, 300),
     notes: clean(c.notes, 500),
   };
@@ -260,8 +265,16 @@ async function createOrder(req, res) {
   if (customer.name.length < 3) errors.push('من فضلك اكتب الاسم بالكامل');
   if (!isValidEgyptMobile(customer.phone)) errors.push('رقم الموبايل غير صحيح (مثال: 01012345678)');
   if (customer.phone2 && !isValidEgyptMobile(customer.phone2)) errors.push('رقم الموبايل الإضافي غير صحيح');
-  if (!GOVERNORATES.includes(customer.governorate)) errors.push('اختار المحافظة');
-  if (customer.city.length < 2) errors.push('اكتب المدينة أو المنطقة');
+  const shippingTable = getShipping();
+  const gov = shippingTable[customer.governorate];
+  const area = clean(c.area, 80);
+  if (!gov) errors.push('اختار المحافظة');
+  else if (area === OTHER_AREA) {
+    customer.city = clean(c.areaOther, 80);
+    customer.areaUnlisted = true;
+    if (customer.city.length < 2) errors.push('اكتب اسم المنطقة');
+  } else if (gov.areas[area] !== undefined) customer.city = area;
+  else errors.push('اختار المنطقة');
   if (customer.address.length < 8) errors.push('اكتب العنوان بالتفصيل (شارع، عمارة، دور، شقة)');
 
   // الأسعار بتتحسب من السيرفر مش من المتصفح
@@ -279,7 +292,7 @@ async function createOrder(req, res) {
   if (errors.length) return send(res, 422, { error: errors.join('\n'), errors });
 
   const subtotal = items.reduce((s, i) => s + i.lineTotal, 0);
-  const shipping = calcShipping(subtotal, customer.governorate);
+  const shipping = calcShipping(subtotal, customer.governorate, customer.areaUnlisted ? null : customer.city);
   const orders = getOrders();
   const order = {
     id: crypto.randomUUID(),
@@ -331,8 +344,8 @@ async function handleApi(req, res, url) {
       storeWhatsapp: CONFIG.storeWhatsapp,
       shippingFee: CONFIG.shippingFee,
       freeShippingOver: CONFIG.freeShippingOver,
-      governorates: GOVERNORATES,
-      shippingRates: getShipping(),
+      shipping: getShipping(),
+      otherArea: OTHER_AREA,
     });
   }
   if (req.method === 'GET' && p === '/api/products') {

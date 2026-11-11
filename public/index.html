@@ -132,10 +132,14 @@
           <label>المحافظة *
             <select name="governorate" required id="govSelect"><option value="">اختار…</option></select>
           </label>
-          <label>المدينة / المنطقة *
-            <input name="city" required placeholder="مثال: مدينة نصر">
+          <label>المنطقة *
+            <select name="area" required id="areaSelect" disabled><option value="">اختار المحافظة الأول</option></select>
           </label>
         </div>
+        <label id="areaOtherWrap" hidden>اسم المنطقة *
+          <input name="areaOther" placeholder="اكتب اسم منطقتك">
+          <small class="hint">منطقتك مش في القايمة، فهنحسب الشحن بالسعر الأساسي للمحافظة وهنأكده معاك قبل الشحن.</small>
+        </label>
         <label>العنوان بالتفصيل *
           <textarea name="address" required rows="2" placeholder="الشارع، رقم العمارة، الدور، الشقة، علامة مميزة"></textarea>
         </label>
