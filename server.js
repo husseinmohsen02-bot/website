@@ -33,6 +33,7 @@ const DATA_DIR = path.join(__dirname, 'data');
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const PRODUCTS_FILE = path.join(DATA_DIR, 'products.json');
 const ORDERS_FILE = path.join(DATA_DIR, 'orders.json');
+const SHIPPING_FILE = path.join(DATA_DIR, 'shipping.json');
 
 const GOVERNORATES = [
   'القاهرة', 'الجيزة', 'الإسكندرية', 'القليوبية', 'الشرقية', 'الدقهلية', 'الغربية',
@@ -53,6 +54,13 @@ function writeJsonAtomic(file, data) {
   fs.renameSync(tmp, file);
 }
 const getProducts = () => readJson(PRODUCTS_FILE, []);
+function getShipping() {
+  const s = readJson(SHIPPING_FILE, {});
+  const def = Number.isFinite(Number(s.default)) ? Number(s.default) : CONFIG.shippingFee;
+  const rates = {};
+  for (const g of GOVERNORATES) rates[g] = Number.isFinite(Number(s.rates?.[g])) ? Number(s.rates[g]) : def;
+  return rates;
+}
 const getOrders = () => readJson(ORDERS_FILE, []);
 const saveOrders = (orders) => writeJsonAtomic(ORDERS_FILE, orders);
 
@@ -110,9 +118,9 @@ function safeEqual(a, b) {
 }
 const isAdmin = (req) => safeEqual(req.headers['x-admin-password'] || '', CONFIG.adminPassword);
 
-function calcShipping(subtotal) {
+function calcShipping(subtotal, governorate) {
   if (CONFIG.freeShippingOver > 0 && subtotal >= CONFIG.freeShippingOver) return 0;
-  return CONFIG.shippingFee;
+  return getShipping()[governorate] ?? CONFIG.shippingFee;
 }
 
 // ---------- رسالة واتساب ----------
@@ -124,7 +132,7 @@ function orderMessage(order) {
     '',
     `رقم الطلب: #${order.number}`,
     ...lines,
-    `الشحن: ${order.shipping} ج.م`,
+    `الشحن (${order.customer.governorate}): ${order.shipping} ج.م`,
     `الإجمالي: ${order.total} ج.م (الدفع عند الاستلام)`,
     '',
     `العنوان: ${order.customer.governorate} - ${order.customer.city} - ${order.customer.address}`,
@@ -270,7 +278,7 @@ async function createOrder(req, res) {
   if (errors.length) return send(res, 422, { error: errors.join('\n'), errors });
 
   const subtotal = items.reduce((s, i) => s + i.lineTotal, 0);
-  const shipping = calcShipping(subtotal);
+  const shipping = calcShipping(subtotal, customer.governorate);
   const orders = getOrders();
   const order = {
     id: crypto.randomUUID(),
@@ -322,6 +330,7 @@ async function handleApi(req, res, url) {
       shippingFee: CONFIG.shippingFee,
       freeShippingOver: CONFIG.freeShippingOver,
       governorates: GOVERNORATES,
+      shippingRates: getShipping(),
     });
   }
   if (req.method === 'GET' && p === '/api/products') {

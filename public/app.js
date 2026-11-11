@@ -5,7 +5,8 @@
   const CART_KEY = 'coffee_cart_v1';
   const CUSTOMER_KEY = 'coffee_customer_v1';
 
-  let config = { shippingFee: 0, freeShippingOver: 0, governorates: [] };
+  let config = { shippingFee: 0, freeShippingOver: 0, governorates: [], shippingRates: {} };
+  let governorate = '';
   let products = [];
   let cart = load(CART_KEY, {}); // { productId: qty }
 
@@ -26,9 +27,10 @@
     }
     document.querySelectorAll('#storeName, .store-name').forEach((el) => (el.textContent = config.storeName));
     document.title = `${config.storeName} — بن تركي طازة`;
-    $('#shippingNote').textContent = config.freeShippingOver > 0
-      ? `مصاريف الشحن ${money(config.shippingFee)} — شحن مجاني للطلبات فوق ${money(config.freeShippingOver)}`
-      : `مصاريف الشحن ${money(config.shippingFee)} لكل المحافظات`;
+    const rates = Object.values(config.shippingRates || {});
+    const minRate = rates.length ? Math.min(...rates) : config.shippingFee;
+    $('#shippingNote').textContent = `العرض لحد ما الكمية تخلص. مصاريف الشحن حسب المحافظة وبتبدأ من ${money(minRate)}`
+      + (config.freeShippingOver > 0 ? `، والشحن مجاني للطلبات فوق ${money(config.freeShippingOver)}` : '');
     if (config.storeWhatsapp) {
       $('#footerWa').innerHTML = `للاستفسار: <a href="https://wa.me/${esc(config.storeWhatsapp)}" target="_blank" rel="noopener">واتساب</a>`;
     }
@@ -50,13 +52,17 @@
         <div class="card-media">
           ${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : coffeeSvg}
           ${p.tag ? `<span class="card-tag">${esc(p.tag)}</span>` : ''}
+          ${p.oldPrice > p.price ? `<span class="card-off">خصم ${Math.round((1 - p.price / p.oldPrice) * 100).toLocaleString('ar-EG')}٪</span>` : ''}
         </div>
         <div class="card-body">
           <h3>${esc(p.name)}</h3>
           <span class="weight">${esc(p.weight)}</span>
           <p>${esc(p.description)}</p>
           <div class="card-foot">
-            <span class="price">${Number(p.price).toLocaleString('ar-EG')} <small>ج.م</small></span>
+            <span class="prices">
+              ${p.oldPrice > p.price ? `<span class="old-price">بدل <s>${money(p.oldPrice)}</s></span>` : ''}
+              <span class="price">${Number(p.price).toLocaleString('ar-EG')} <small>ج.م</small></span>
+            </span>
             <div class="card-action">${actionHtml(p.id)}</div>
           </div>
         </div>
@@ -92,8 +98,10 @@
       return p ? { ...p, qty, lineTotal: p.price * qty } : null;
     }).filter(Boolean);
     const subtotal = lines.reduce((s, l) => s + l.lineTotal, 0);
-    const shipping = !lines.length ? 0 : (config.freeShippingOver > 0 && subtotal >= config.freeShippingOver ? 0 : config.shippingFee);
-    return { lines, subtotal, shipping, total: subtotal + shipping, count: lines.reduce((s, l) => s + l.qty, 0) };
+    const free = config.freeShippingOver > 0 && subtotal >= config.freeShippingOver;
+    // الشحن بيتحسب بس بعد ما العميل يختار المحافظة
+    const shipping = !lines.length || free ? 0 : (governorate ? (config.shippingRates[governorate] ?? config.shippingFee) : null);
+    return { lines, subtotal, shipping, free, total: subtotal + (shipping || 0), count: lines.reduce((s, l) => s + l.qty, 0) };
   }
 
   function renderCart() {
@@ -110,14 +118,14 @@
     $('#cartFoot').hidden = false;
     $('#cartItems').innerHTML = t.lines.map((l) => `
       <div class="cart-item">
-        <div><h4>${esc(l.name)}</h4><div class="meta">${esc(l.weight)} • ${money(l.price)}</div></div>
+        <div><h4>${esc(l.name)}</h4><div class="meta">${esc(l.weight)} • ${money(l.price)}${l.oldPrice > l.price ? ` <s>${money(l.oldPrice)}</s>` : ''}</div></div>
         <div class="line">${money(l.lineTotal)}</div>
         <div class="qty"><button data-inc="${esc(l.id)}" aria-label="زيادة">+</button><span>${l.qty.toLocaleString('ar-EG')}</span><button data-dec="${esc(l.id)}" aria-label="تقليل">−</button></div>
         <button class="remove" data-remove="${esc(l.id)}">حذف</button>
       </div>`).join('');
     $('#cartSubtotal').textContent = money(t.subtotal);
-    $('#cartShipping').textContent = t.shipping === 0 ? 'مجاني 🎉' : money(t.shipping);
-    $('#cartTotal').textContent = money(t.total);
+    $('#cartShipping').textContent = t.free ? 'مجاني 🎉' : 'حسب المحافظة';
+    $('#cartTotal').textContent = money(t.subtotal);
     const left = config.freeShippingOver - t.subtotal;
     $('#freeHint').textContent = config.freeShippingOver > 0 && left > 0 ? `فاضلك ${money(left)} وتاخد شحن مجاني!` : '';
   }
@@ -138,17 +146,24 @@
     document.body.classList.remove('locked');
   }
 
+  function renderSummary() {
+    const t = totals();
+    const ship = t.free ? 'مجاني' : t.shipping === null ? 'اختار المحافظة' : money(t.shipping);
+    $('#checkoutSummary').innerHTML = t.lines.map((l) => `<div class="row"><span>${esc(l.name)} (${esc(l.weight)}) × ${l.qty.toLocaleString('ar-EG')}</span><span>${money(l.lineTotal)}</span></div>`).join('')
+      + `<div class="row"><span>الشحن${governorate ? ` (${esc(governorate)})` : ''}</span><span>${ship}</span></div>`
+      + `<div class="row total"><span>الإجمالي</span><b>${t.shipping === null && !t.free ? `${money(t.subtotal)} + الشحن` : money(t.total)}</b></div>`;
+  }
+
   function openCheckout() {
     const t = totals();
     if (!t.lines.length) return;
     closeAll();
-    $('#checkoutSummary').innerHTML = t.lines.map((l) => `<div class="row"><span>${esc(l.name)} (${esc(l.weight)}) × ${l.qty.toLocaleString('ar-EG')}</span><span>${money(l.lineTotal)}</span></div>`).join('')
-      + `<div class="row"><span>الشحن</span><span>${t.shipping === 0 ? 'مجاني' : money(t.shipping)}</span></div>`
-      + `<div class="row total"><span>الإجمالي</span><b>${money(t.total)}</b></div>`;
     // استرجاع بيانات العميل من آخر طلب
     const saved = load(CUSTOMER_KEY, {});
     const form = $('#checkoutForm');
     for (const [k, v] of Object.entries(saved)) if (form.elements[k] && !form.elements[k].value) form.elements[k].value = v;
+    governorate = form.elements.governorate.value;
+    renderSummary();
     $('#formError').textContent = '';
     $('#checkoutModal').hidden = false;
     document.body.classList.add('locked');
@@ -229,6 +244,7 @@
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAll(); });
   $('#checkoutForm').addEventListener('submit', submitOrder);
+  $('#govSelect').addEventListener('change', (e) => { governorate = e.target.value; renderSummary(); });
 
   init();
 })();
