@@ -24,6 +24,8 @@ const CONFIG = {
   storeWhatsapp: (process.env.STORE_WHATSAPP || '971553626134').replace(/\D/g, ''),
   shippingFee: Number(process.env.SHIPPING_FEE ?? 50),
   freeShippingOver: Number(process.env.FREE_SHIPPING_OVER ?? 0),
+  // الطلبات اللي وزنها أكتر من كده شركة الشحن ممكن تضيف عليها مصاريف وزن زيادة
+  overweightKg: Number(process.env.OVERWEIGHT_KG ?? 1),
   waToken: process.env.WHATSAPP_TOKEN || '',
   waPhoneId: process.env.WHATSAPP_PHONE_NUMBER_ID || '',
   waTemplate: process.env.WHATSAPP_TEMPLATE_NAME || '',
@@ -139,6 +141,7 @@ function orderMessage(order) {
     ...lines,
     `الشحن (${order.customer.governorate}): ${order.shipping} ج.م`,
     `الإجمالي: ${order.total} ج.م (الدفع عند الاستلام)`,
+    ...(order.overweight ? ['⚖️ الطلب وزنه أكتر من كيلو، فممكن شركة الشحن تضيف مصاريف وزن زيادة بسيطة، وهنبلغك بيها قبل الشحن.'] : []),
     '',
     `العنوان: ${order.customer.governorate} - ${order.customer.city} - ${order.customer.address}`,
     '',
@@ -199,7 +202,7 @@ function toCsv(orders) {
   };
   const header = ['رقم الطلب', 'التاريخ', 'الحالة', 'اسم العميل', 'الموبايل', 'موبايل إضافي',
     'المحافظة', 'المدينة/المنطقة', 'العنوان', 'المنتجات', 'عدد القطع', 'المنتجات (ج.م)',
-    'الشحن', 'المبلغ المطلوب تحصيله', 'ملاحظات'];
+    'الشحن', 'المبلغ المطلوب تحصيله', 'الوزن التقريبي (كجم)', 'ملاحظات'];
   const rows = orders.map((o) => [
     o.number,
     new Date(o.createdAt).toLocaleString('en-GB', { timeZone: 'Africa/Cairo' }),
@@ -215,7 +218,8 @@ function toCsv(orders) {
     o.subtotal,
     o.shipping,
     o.total,
-    [o.customer.areaUnlisted ? '⚠️ منطقة مش في قايمة الشحن' : '', o.customer.notes].filter(Boolean).join(' — '),
+    o.weightGrams ? (o.weightGrams / 1000).toFixed(2) : '',
+    [o.customer.areaUnlisted ? '⚠️ منطقة مش في قايمة الشحن' : '', o.overweight ? '⚖️ وزن زيادة عن كيلو' : '', o.customer.notes].filter(Boolean).join(' — '),
   ]);
   // BOM عشان Excel يقرأ العربي صح
   return '﻿' + [header, ...rows].map((r) => r.map(esc).join(',')).join('\r\n');
@@ -286,12 +290,14 @@ async function createOrder(req, res) {
     if (!p || !p.available || !(qty >= 1 && qty <= 99)) continue;
     const existing = items.find((x) => x.id === p.id);
     if (existing) { existing.qty = Math.min(99, existing.qty + qty); existing.lineTotal = existing.qty * existing.price; continue; }
-    items.push({ id: p.id, name: p.name, weight: p.weight, price: p.price, qty, lineTotal: p.price * qty });
+    items.push({ id: p.id, name: p.name, weight: p.weight, price: p.price, qty, lineTotal: p.price * qty, shipWeight: Number(p.shipWeight) || 0 });
   }
   if (!items.length) errors.push('السلة فاضية');
   if (errors.length) return send(res, 422, { error: errors.join('\n'), errors });
 
   const subtotal = items.reduce((s, i) => s + i.lineTotal, 0);
+  const weightGrams = items.reduce((s, i) => s + i.shipWeight * i.qty, 0);
+  const overweight = weightGrams > CONFIG.overweightKg * 1000;
   const shipping = calcShipping(subtotal, customer.governorate, customer.areaUnlisted ? null : customer.city);
   const orders = getOrders();
   const order = {
@@ -304,6 +310,8 @@ async function createOrder(req, res) {
     subtotal,
     shipping,
     total: subtotal + shipping,
+    weightGrams,
+    overweight,
     payment: 'cod',
     whatsapp: null,
   };
@@ -344,6 +352,7 @@ async function handleApi(req, res, url) {
       storeWhatsapp: CONFIG.storeWhatsapp,
       shippingFee: CONFIG.shippingFee,
       freeShippingOver: CONFIG.freeShippingOver,
+      overweightKg: CONFIG.overweightKg,
       shipping: getShipping(),
       otherArea: OTHER_AREA,
     });

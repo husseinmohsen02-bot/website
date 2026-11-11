@@ -126,6 +126,7 @@ input.invalid, select.invalid, textarea.invalid { border-color: var(--danger); }
 textarea { resize: vertical; }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .summary { background: var(--bg); border-radius: 12px; padding: 12px 14px; font-size: .95rem; display: grid; gap: 4px; }
+.weight-note { margin: 6px 0 0; padding: 8px 10px; background: #fff4d6; color: #7a5200; border-radius: 8px; font-size: .88rem; }
 .hint { color: var(--muted); font-weight: 400; font-size: .85rem; }
 select:disabled { background: var(--bg); color: var(--muted); }
 .form-error { color: var(--danger); white-space: pre-line; margin: 0; font-weight: 600; min-height: 0; }
