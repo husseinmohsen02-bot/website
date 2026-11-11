@@ -42,10 +42,14 @@
     "weight": "100 جم",
     "price": 150,
     "oldPrice": 160,
-    "image": "/images/bag-100.jpg",
+    "image": "/images/products/bag-100/cover.jpg",
     "tag": "",
     "available": true,
-    "images": []
+    "images": [
+      "/images/products/bag-100/1.jpg",
+      "/images/products/bag-100/2.jpg",
+      "/images/products/bag-100/3.jpg"
+    ]
   },
   {
     "id": "talqima-12",
