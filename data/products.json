@@ -6,9 +6,17 @@
     "weight": "ربع كيلو (250 جم)",
     "price": 370,
     "oldPrice": 400,
-    "image": "/images/tin-250.jpg",
+    "image": "/images/products/tin-250/cover.jpg",
     "tag": "الأكثر مبيعاً",
-    "available": true
+    "available": true,
+    "images": [
+      "/images/products/tin-250/1.jpg",
+      "/images/products/tin-250/2.jpg",
+      "/images/products/tin-250/3.jpg",
+      "/images/products/tin-250/4.jpg",
+      "/images/products/tin-250/5.jpg",
+      "/images/products/tin-250/6.jpg"
+    ]
   },
   {
     "id": "tin-500",
@@ -19,7 +27,8 @@
     "oldPrice": 750,
     "image": "/images/tin-500.jpg",
     "tag": "",
-    "available": true
+    "available": true,
+    "images": []
   },
   {
     "id": "bag-100",
@@ -30,7 +39,8 @@
     "oldPrice": 160,
     "image": "/images/bag-100.jpg",
     "tag": "",
-    "available": true
+    "available": true,
+    "images": []
   },
   {
     "id": "talqima-12",
@@ -41,7 +51,8 @@
     "oldPrice": 180,
     "image": "",
     "tag": "",
-    "available": true
+    "available": true,
+    "images": []
   },
   {
     "id": "box-tin250-kanaka",
@@ -50,8 +61,9 @@
     "weight": "250 جم + كنكة معدن",
     "price": 425,
     "oldPrice": null,
-    "image": "/images/tin-250.jpg",
+    "image": "/images/products/tin-250/cover.jpg",
     "tag": "عرض البوكس",
-    "available": true
+    "available": true,
+    "images": []
   }
 ]

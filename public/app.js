@@ -49,13 +49,14 @@
     if (!products.length) { $('#productGrid').innerHTML = '<p class="muted">مفيش منتجات متاحة حالياً.</p>'; return; }
     $('#productGrid').innerHTML = products.map((p) => `
       <article class="card" data-id="${esc(p.id)}">
-        <div class="card-media">
+        <div class="card-media" data-open="${esc(p.id)}" role="button" tabindex="0" aria-label="تفاصيل ${esc(p.name)}">
           ${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : coffeeSvg}
           ${p.tag ? `<span class="card-tag">${esc(p.tag)}</span>` : ''}
           ${p.oldPrice > p.price ? `<span class="card-off">خصم ${Math.round((1 - p.price / p.oldPrice) * 100).toLocaleString('ar-EG')}٪</span>` : ''}
         </div>
         <div class="card-body">
-          <h3>${esc(p.name)}</h3>
+          <h3><button class="link" data-open="${esc(p.id)}">${esc(p.name)}</button></h3>
+          ${p.images?.length > 1 ? `<button class="link more-photos" data-open="${esc(p.id)}">📷 ${p.images.length.toLocaleString('ar-EG')} صور</button>` : ''}
           <span class="weight">${esc(p.weight)}</span>
           <p>${esc(p.description)}</p>
           <div class="card-foot">
@@ -79,6 +80,44 @@
   function refreshCardAction(id) {
     const card = document.querySelector(`.card[data-id="${CSS.escape(id)}"] .card-action`);
     if (card) card.innerHTML = actionHtml(id);
+    if (pm.id === id) $('#pmAction').innerHTML = actionHtml(id);
+  }
+
+  // ---------- صفحة المنتج + معرض الصور ----------
+  const pm = { id: null, images: [], idx: 0 };
+  function openProduct(id) {
+    const p = products.find((x) => x.id === id);
+    if (!p) return;
+    closeAll();
+    pm.id = id;
+    pm.images = p.images?.length ? p.images : (p.image ? [p.image] : []);
+    pm.idx = 0;
+    $('#pmTitle').textContent = p.name;
+    $('#pmWeight').textContent = p.weight;
+    $('#pmDesc').textContent = p.description;
+    $('#pmPrices').innerHTML = (p.oldPrice > p.price ? `<span class="old-price">بدل <s>${money(p.oldPrice)}</s></span>` : '')
+      + `<span class="price">${Number(p.price).toLocaleString('ar-EG')} <small>ج.م</small></span>`;
+    $('#pmAction').innerHTML = actionHtml(id);
+    $('#pmThumbs').innerHTML = pm.images.length > 1
+      ? pm.images.map((src, i) => `<button data-pm-go="${i}" aria-label="صورة ${i + 1}"><img src="${esc(src)}" alt="" loading="lazy"></button>`).join('')
+      : '';
+    document.querySelectorAll('.pm-nav').forEach((b) => (b.hidden = pm.images.length < 2));
+    showPmImage();
+    $('#productModal').hidden = false;
+    document.body.classList.add('locked');
+  }
+  function showPmImage() {
+    const img = $('#pmImage');
+    if (!pm.images.length) { img.hidden = true; return; }
+    img.hidden = false;
+    img.src = pm.images[pm.idx];
+    img.alt = `${$('#pmTitle').textContent} — صورة ${pm.idx + 1}`;
+    document.querySelectorAll('#pmThumbs button').forEach((b, i) => b.classList.toggle('active', i === pm.idx));
+  }
+  function stepPm(d) {
+    if (pm.images.length < 2) return;
+    pm.idx = (pm.idx + d + pm.images.length) % pm.images.length;
+    showPmImage();
   }
 
   // ---------- السلة ----------
@@ -143,6 +182,8 @@
     $('#overlay').hidden = true;
     $('#checkoutModal').hidden = true;
     $('#successModal').hidden = true;
+    $('#productModal').hidden = true;
+    pm.id = null;
     document.body.classList.remove('locked');
   }
 
@@ -232,8 +273,11 @@
 
   // ---------- الأحداث ----------
   document.addEventListener('click', (e) => {
-    const t = e.target.closest('button, a, .overlay, .modal');
+    const t = e.target.closest('button, a, .overlay, .modal, [data-open]');
     if (!t) return;
+    if (t.dataset.open) { openProduct(t.dataset.open); return; }
+    if (t.dataset.pmStep) { stepPm(Number(t.dataset.pmStep)); return; }
+    if (t.dataset.pmGo) { pm.idx = Number(t.dataset.pmGo); showPmImage(); return; }
     if (t.dataset.add) { setQty(t.dataset.add, 1); toast('اتضاف للسلة ✓'); return; }
     if (t.dataset.inc) { setQty(t.dataset.inc, (cart[t.dataset.inc] || 0) + 1); return; }
     if (t.dataset.dec) { setQty(t.dataset.dec, (cart[t.dataset.dec] || 0) - 1); return; }
@@ -242,7 +286,19 @@
     if (t.id === 'openCart') { openCart(); return; }
     if (t.id === 'toCheckout') { openCheckout(); }
   });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAll(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAll();
+    if (!$('#productModal').hidden && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) stepPm(e.key === 'ArrowLeft' ? 1 : -1);
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches?.('.card-media[data-open]')) { e.preventDefault(); openProduct(e.target.dataset.open); }
+  });
+  // سحب الصورة يمين وشمال على الموبايل
+  let touchX = null;
+  $('#pmImage').addEventListener('touchstart', (e) => { touchX = e.touches[0].clientX; }, { passive: true });
+  $('#pmImage').addEventListener('touchend', (e) => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX; touchX = null;
+    if (Math.abs(dx) > 40) stepPm(dx > 0 ? 1 : -1);
+  });
   $('#checkoutForm').addEventListener('submit', submitOrder);
   $('#govSelect').addEventListener('change', (e) => { governorate = e.target.value; renderSummary(); });
 

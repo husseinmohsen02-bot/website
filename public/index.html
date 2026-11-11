@@ -164,6 +164,34 @@
     </div>
   </div>
 
+  <!-- صفحة المنتج -->
+  <div class="modal" id="productModal" role="dialog" aria-modal="true" aria-labelledby="pmTitle" hidden>
+    <div class="modal-card product-card">
+      <div class="drawer-head">
+        <h3 id="pmTitle"></h3>
+        <button class="icon-btn" data-close aria-label="إغلاق">✕</button>
+      </div>
+      <div class="pm-body">
+        <div class="pm-gallery">
+          <div class="pm-main">
+            <button class="pm-nav pm-prev" data-pm-step="-1" aria-label="الصورة اللي قبلها">›</button>
+            <img id="pmImage" alt="">
+            <button class="pm-nav pm-next" data-pm-step="1" aria-label="الصورة اللي بعدها">‹</button>
+          </div>
+          <div class="pm-thumbs" id="pmThumbs"></div>
+        </div>
+        <div class="pm-info">
+          <span class="weight" id="pmWeight"></span>
+          <p id="pmDesc"></p>
+          <div class="pm-buy">
+            <span class="prices" id="pmPrices"></span>
+            <div class="card-action" id="pmAction"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="/app.js"></script>
