@@ -3,119 +3,207 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Kemora | كيمورا للكيماويات</title>
-  <meta name="description" content="كيمورا – توريد وتوزيع الكيماويات الصناعية والغذائية ومواد معالجة المياه بجودة مضمونة وتوصيل سريع.">
+  <title>Chemicals</title>
+  <meta name="description" content="حلول كيميائية متخصصة وتوزيع خامات صناعية للدهانات والأحبار والفوم والبناء والأغذية والعناية الشخصية.">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
+<!-- شريط علوي -->
+<div class="topbar">
+  <div class="container topbar-inner">
+    <a class="js-email" href="#">✉ <span class="js-email-text"></span></a>
+    <a class="js-phone" href="#" dir="ltr">☎ <span class="js-phone-text"></span></a>
+    <span class="hide-sm">🕘 <span data-en="Sat – Thu: 9:30 AM – 7:00 PM" data-ar="السبت – الخميس: 9:30 ص – 7:00 م">السبت – الخميس: 9:30 ص – 7:00 م</span></span>
+  </div>
+</div>
+
 <header class="nav">
   <div class="container nav-inner">
-    <a href="#home" class="brand"><img src="assets/logo.svg" alt="Kemora" height="40"></a>
+    <a href="#home" class="brand">
+      <img src="assets/logo-mark.svg" alt="" width="40" height="40">
+      <span class="brand-text"><b class="js-brand"></b><small data-en="Chemical Solutions" data-ar="حلول كيميائية">حلول كيميائية</small></span>
+    </a>
     <nav class="links" id="links">
       <a href="#about" data-en="About" data-ar="من نحن">من نحن</a>
+      <a href="#services" data-en="Services" data-ar="خدماتنا">خدماتنا</a>
       <a href="#products" data-en="Products" data-ar="المنتجات">المنتجات</a>
       <a href="#industries" data-en="Industries" data-ar="القطاعات">القطاعات</a>
-      <a href="#quote" data-en="Get a Quote" data-ar="اطلب عرض سعر">اطلب عرض سعر</a>
       <a href="#contact" data-en="Contact" data-ar="تواصل معنا">تواصل معنا</a>
     </nav>
     <div class="nav-actions">
-      <button class="lang" id="langBtn" aria-label="Change language">EN</button>
-      <button class="burger" id="burger" aria-label="Menu">☰</button>
+      <a href="#quote" class="btn sm primary hide-sm" data-en="Get a Quote" data-ar="اطلب عرض سعر">اطلب عرض سعر</a>
+      <button class="icon-btn" id="langBtn" aria-label="Change language">EN</button>
+      <button class="icon-btn burger" id="burger" aria-label="Menu">☰</button>
     </div>
   </div>
 </header>
 
+<!-- الهيرو -->
 <section class="hero" id="home">
+  <div class="hero-bg" aria-hidden="true"></div>
   <div class="container hero-inner">
-    <div>
-      <span class="tag" data-en="Trusted chemical supply partner" data-ar="شريكك الموثوق في توريد الكيماويات">شريكك الموثوق في توريد الكيماويات</span>
-      <h1 data-en="Quality chemicals, delivered on time." data-ar="كيماويات بجودة عالية… توصل في ميعادها.">كيماويات بجودة عالية… توصل في ميعادها.</h1>
-      <p data-en="Kemora supplies industrial, food-grade and water-treatment chemicals to factories and businesses — with certified quality, fair prices and fast delivery." data-ar="كيمورا بتورّد الكيماويات الصناعية والغذائية ومواد معالجة المياه للمصانع والشركات — بجودة معتمدة وأسعار عادلة وتوصيل سريع.">كيمورا بتورّد الكيماويات الصناعية والغذائية ومواد معالجة المياه للمصانع والشركات — بجودة معتمدة وأسعار عادلة وتوصيل سريع.</p>
+    <div class="hero-text">
+      <span class="pill" data-en="Specialty chemicals & distribution" data-ar="كيماويات متخصصة وتوزيع">كيماويات متخصصة وتوزيع</span>
+      <h1><span data-en="Smart chemistry for" data-ar="كيمياء ذكية">كيمياء ذكية</span> <em data-en="growing industries." data-ar="لصناعة بتكبر.">لصناعة بتكبر.</em></h1>
+      <p data-en="We supply high-quality chemicals and industrial raw materials, backed by technical know-how and a dependable supply chain — so your products perform better and your business grows faster." data-ar="بنوفّر كيماويات وخامات صناعية عالية الجودة، ومعاها خبرة فنية وسلسلة توريد تعتمد عليها — عشان منتجك يبقى أحسن وشغلك يكبر أسرع.">بنوفّر كيماويات وخامات صناعية عالية الجودة، ومعاها خبرة فنية وسلسلة توريد تعتمد عليها — عشان منتجك يبقى أحسن وشغلك يكبر أسرع.</p>
       <div class="cta">
         <a href="#quote" class="btn primary" data-en="Request a Quote" data-ar="اطلب عرض سعر">اطلب عرض سعر</a>
-        <a href="#products" class="btn ghost" data-en="Browse Products" data-ar="تصفح المنتجات">تصفح المنتجات</a>
+        <a href="#products" class="btn outline" data-en="Explore Products" data-ar="تصفح المنتجات">تصفح المنتجات</a>
       </div>
     </div>
-    <div class="hero-art" aria-hidden="true">
-      <svg viewBox="0 0 300 300">
-        <g fill="none" stroke="currentColor" stroke-width="3">
-          <polygon points="150,40 205,72 205,136 150,168 95,136 95,72"/>
-          <polygon points="205,136 260,168 260,232 205,264 150,232 150,168"/>
-          <polygon points="95,136 150,168 150,232 95,264 40,232 40,168"/>
+    <div class="hero-visual" aria-hidden="true">
+      <svg viewBox="0 0 360 360">
+        <defs>
+          <radialGradient id="g1" cx="50%" cy="40%"><stop offset="0" stop-color="#7DD3FC"/><stop offset="1" stop-color="#2563EB"/></radialGradient>
+        </defs>
+        <g stroke="#60A5FA" stroke-width="3" opacity=".8">
+          <line x1="180" y1="180" x2="90" y2="100"/><line x1="180" y1="180" x2="280" y2="110"/>
+          <line x1="180" y1="180" x2="180" y2="300"/><line x1="90" y1="100" x2="60" y2="210"/>
+          <line x1="280" y1="110" x2="310" y2="230"/>
         </g>
-        <circle cx="150" cy="104" r="12" fill="#F2B134"/>
-        <circle cx="205" cy="200" r="9" fill="#fff"/>
-        <circle cx="95" cy="200" r="9" fill="#fff"/>
+        <circle cx="180" cy="180" r="42" fill="url(#g1)"/>
+        <circle cx="90" cy="100" r="24" fill="#38BDF8"/><circle cx="280" cy="110" r="28" fill="#3B82F6"/>
+        <circle cx="180" cy="300" r="22" fill="#38BDF8"/><circle cx="60" cy="210" r="14" fill="#93C5FD"/>
+        <circle cx="310" cy="230" r="16" fill="#93C5FD"/>
       </svg>
     </div>
   </div>
-</section>
-
-<section class="stats">
-  <div class="container stats-grid">
-    <div><b>500+</b><span data-en="Products" data-ar="منتج">منتج</span></div>
-    <div><b>300+</b><span data-en="Clients" data-ar="عميل">عميل</span></div>
-    <div><b>48h</b><span data-en="Delivery" data-ar="توصيل">توصيل</span></div>
-    <div><b>ISO</b><span data-en="Certified quality" data-ar="جودة معتمدة">جودة معتمدة</span></div>
-  </div>
-</section>
-
-<section id="about" class="section">
-  <div class="container two-col">
-    <div>
-      <h2 data-en="About Kemora" data-ar="عن كيمورا">عن كيمورا</h2>
-      <p data-en="We are a chemical trading and distribution company. We source from approved international manufacturers and deliver to factories across the region, with full technical documents (COA, SDS/MSDS) for every product." data-ar="إحنا شركة تجارة وتوزيع كيماويات. بنستورد من مصنعين عالميين معتمدين وبنوصّل للمصانع في كل المنطقة، ومع كل منتج شهادة تحليل (COA) وورقة سلامة (SDS/MSDS).">إحنا شركة تجارة وتوزيع كيماويات. بنستورد من مصنعين عالميين معتمدين وبنوصّل للمصانع في كل المنطقة، ومع كل منتج شهادة تحليل (COA) وورقة سلامة (SDS/MSDS).</p>
-    </div>
-    <ul class="checks">
-      <li data-en="Certified, traceable quality" data-ar="جودة معتمدة وقابلة للتتبع">جودة معتمدة وقابلة للتتبع</li>
-      <li data-en="Competitive, transparent pricing" data-ar="أسعار منافسة وواضحة">أسعار منافسة وواضحة</li>
-      <li data-en="Fast, safe delivery" data-ar="توصيل سريع وآمن">توصيل سريع وآمن</li>
-      <li data-en="Technical support from chemists" data-ar="دعم فني من كيميائيين متخصصين">دعم فني من كيميائيين متخصصين</li>
-    </ul>
-  </div>
-</section>
-
-<section id="products" class="section alt">
   <div class="container">
-    <h2 data-en="Our Products" data-ar="منتجاتنا">منتجاتنا</h2>
-    <input id="search" class="search" type="search" placeholder="ابحث عن منتج… مثال: Caustic Soda" data-en-ph="Search a product… e.g. Caustic Soda" data-ar-ph="ابحث عن منتج… مثال: Caustic Soda">
-    <div class="grid" id="productGrid"></div>
-    <p class="empty" id="empty" hidden data-en="Not listed? Ask us — we can source it." data-ar="مش لاقي المنتج؟ اسألنا وهنوفره لك.">مش لاقي المنتج؟ اسألنا وهنوفره لك.</p>
+    <div class="stats">
+      <div><b>8</b><span data-en="Product families" data-ar="عائلات منتجات">عائلات منتجات</span></div>
+      <div><b>10+</b><span data-en="Industries served" data-ar="قطاعات بنخدمها">قطاعات بنخدمها</span></div>
+      <div><b>MEA</b><span data-en="Middle East & Africa" data-ar="الشرق الأوسط وأفريقيا">الشرق الأوسط وأفريقيا</span></div>
+      <div><b>24h</b><span data-en="Quote response" data-ar="للرد على عرض السعر">للرد على عرض السعر</span></div>
+    </div>
   </div>
 </section>
 
+<!-- من نحن -->
+<section id="about" class="section">
+  <div class="container about">
+    <div>
+      <span class="eyebrow" data-en="About us" data-ar="من نحن">من نحن</span>
+      <h2 data-en="Where science meets possibility" data-ar="لما العلم يفتح أبواب جديدة">لما العلم يفتح أبواب جديدة</h2>
+      <p data-en="We work across coatings, inks, construction chemicals, adhesives, foam, pharma, food, and home & personal care — offering well-selected products supported by solid research and reliable logistics." data-ar="بنشتغل في الدهانات والأحبار وكيماويات البناء والمواد اللاصقة والفوم والأدوية والأغذية ومنتجات العناية الشخصية والمنزلية — بمنتجات مختارة بعناية، ووراها بحث فني وتوريد منتظم.">بنشتغل في الدهانات والأحبار وكيماويات البناء والمواد اللاصقة والفوم والأدوية والأغذية ومنتجات العناية الشخصية والمنزلية — بمنتجات مختارة بعناية، ووراها بحث فني وتوريد منتظم.</p>
+      <p data-en="Our starting focus is the Middle East and Africa, with a global outlook. We partner closely with our clients to turn challenges into opportunities and help them grow." data-ar="بنركّز في البداية على الشرق الأوسط وأفريقيا، وعيننا على العالم كله. وبنشتغل جنب عملائنا خطوة بخطوة عشان نحوّل التحديات لفرص ونكبر سوا.">بنركّز في البداية على الشرق الأوسط وأفريقيا، وعيننا على العالم كله. وبنشتغل جنب عملائنا خطوة بخطوة عشان نحوّل التحديات لفرص ونكبر سوا.</p>
+    </div>
+    <div class="mv">
+      <div class="mv-card">
+        <div class="ico">🎯</div>
+        <h3 data-en="Our Mission" data-ar="رسالتنا">رسالتنا</h3>
+        <p data-en="To deliver innovative, sustainable and high-quality chemical solutions that help our customers improve their products and compete with confidence." data-ar="نقدّم حلول كيميائية مبتكرة ومستدامة وعالية الجودة، تساعد عملاءنا يطوّروا منتجاتهم وينافسوا بثقة.">نقدّم حلول كيميائية مبتكرة ومستدامة وعالية الجودة، تساعد عملاءنا يطوّروا منتجاتهم وينافسوا بثقة.</p>
+      </div>
+      <div class="mv-card">
+        <div class="ico">🔭</div>
+        <h3 data-en="Our Vision" data-ar="رؤيتنا">رؤيتنا</h3>
+        <p data-en="To be a leading name in specialty chemicals and distribution — known for reliability, innovation and true partnership." data-ar="نكون اسم رائد في الكيماويات المتخصصة والتوزيع — معروف بالالتزام والابتكار والشراكة الحقيقية.">نكون اسم رائد في الكيماويات المتخصصة والتوزيع — معروف بالالتزام والابتكار والشراكة الحقيقية.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ليه تختارنا -->
+<section class="section tint">
+  <div class="container">
+    <div class="head">
+      <span class="eyebrow" data-en="Why choose us" data-ar="ليه تختارنا">ليه تختارنا</span>
+      <h2 data-en="Reasons our partners trust us" data-ar="أسباب ثقة شركائنا فينا">أسباب ثقة شركائنا فينا</h2>
+    </div>
+    <div class="why">
+      <div><span>01</span><h3 data-en="Global manufacturers" data-ar="مصنّعين عالميين">مصنّعين عالميين</h3><p data-en="Partnerships with well-known producers worldwide." data-ar="شراكات مع منتجين معروفين حول العالم.">شراكات مع منتجين معروفين حول العالم.</p></div>
+      <div><span>02</span><h3 data-en="Technical expertise" data-ar="خبرة فنية">خبرة فنية</h3><p data-en="Chemists who understand your process and formulas." data-ar="كيميائيين فاهمين خط إنتاجك وتركيباتك.">كيميائيين فاهمين خط إنتاجك وتركيباتك.</p></div>
+      <div><span>03</span><h3 data-en="Development support" data-ar="دعم تطوير المنتج">دعم تطوير المنتج</h3><p data-en="Help with product development and market entry." data-ar="مساعدة في تطوير المنتج ونزوله للسوق.">مساعدة في تطوير المنتج ونزوله للسوق.</p></div>
+      <div><span>04</span><h3 data-en="Quality first" data-ar="الجودة أولًا">الجودة أولًا</h3><p data-en="COA & SDS with every shipment, consistent specs." data-ar="شهادة تحليل وورقة سلامة مع كل شحنة.">شهادة تحليل وورقة سلامة مع كل شحنة.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- الخدمات -->
+<section id="services" class="section">
+  <div class="container">
+    <div class="head">
+      <span class="eyebrow" data-en="Our services" data-ar="خدماتنا">خدماتنا</span>
+      <h2 data-en="What we do for you" data-ar="بنقدّم لك إيه">بنقدّم لك إيه</h2>
+    </div>
+    <div class="services">
+      <article><div class="s-ico">⚗️</div><h3 data-en="Specialty Chemical Solutions" data-ar="حلول كيميائية متخصصة">حلول كيميائية متخصصة</h3><p data-en="Tailored products that improve performance, function and sustainability." data-ar="منتجات متفصّلة على احتياجك تحسّن الأداء والجودة والاستدامة.">منتجات متفصّلة على احتياجك تحسّن الأداء والجودة والاستدامة.</p></article>
+      <article><div class="s-ico">🧪</div><h3 data-en="Technical Support & Innovation" data-ar="دعم فني وابتكار">دعم فني وابتكار</h3><p data-en="Formulation advice, lab trials and new-technology integration." data-ar="استشارات تركيبات، وتجارب معملية، وإدخال تقنيات جديدة.">استشارات تركيبات، وتجارب معملية، وإدخال تقنيات جديدة.</p></article>
+      <article><div class="s-ico">🚚</div><h3 data-en="Chemical Distribution" data-ar="توزيع الكيماويات">توزيع الكيماويات</h3><p data-en="Reliable sourcing and on-time delivery through a strong regional network." data-ar="توريد منتظم وتوصيل في الميعاد من خلال شبكة توزيع قوية.">توريد منتظم وتوصيل في الميعاد من خلال شبكة توزيع قوية.</p></article>
+      <article><div class="s-ico">📈</div><h3 data-en="Market Access & Scale-up" data-ar="دخول السوق والتوسع">دخول السوق والتوسع</h3><p data-en="Helping new solutions reach the market and grow efficiently." data-ar="بنساعد الحلول الجديدة توصل للسوق وتكبر بكفاءة.">بنساعد الحلول الجديدة توصل للسوق وتكبر بكفاءة.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- المنتجات -->
+<section id="products" class="section tint">
+  <div class="container">
+    <div class="head row">
+      <div>
+        <span class="eyebrow" data-en="Our products" data-ar="منتجاتنا">منتجاتنا</span>
+        <h2 data-en="Pure science. Real results." data-ar="علم دقيق… ونتيجة حقيقية.">علم دقيق… ونتيجة حقيقية.</h2>
+      </div>
+      <input id="search" class="search" type="search" placeholder="ابحث باسم المنتج…" data-en-ph="Search products…" data-ar-ph="ابحث باسم المنتج…">
+    </div>
+    <div class="tabs" id="tabs"></div>
+    <div class="grid" id="productGrid"></div>
+    <button class="btn more" id="moreBtn" hidden></button>
+    <p class="empty" id="empty" hidden data-en="Can't find it? Send us a request — we'll source it for you." data-ar="مش لاقي المنتج؟ ابعت لنا طلب وهنوفّره لك.">مش لاقي المنتج؟ ابعت لنا طلب وهنوفّره لك.</p>
+  </div>
+</section>
+
+<!-- القطاعات -->
 <section id="industries" class="section">
   <div class="container">
-    <h2 data-en="Industries We Serve" data-ar="القطاعات اللي بنخدمها">القطاعات اللي بنخدمها</h2>
+    <div class="head">
+      <span class="eyebrow" data-en="Industries" data-ar="القطاعات">القطاعات</span>
+      <h2 data-en="Industries we serve" data-ar="القطاعات اللي بنخدمها">القطاعات اللي بنخدمها</h2>
+    </div>
     <div class="chips">
-      <span data-en="Food & Beverage" data-ar="الأغذية والمشروبات">الأغذية والمشروبات</span>
-      <span data-en="Water Treatment" data-ar="معالجة المياه">معالجة المياه</span>
-      <span data-en="Detergents & Cleaning" data-ar="المنظفات">المنظفات</span>
-      <span data-en="Paints & Coatings" data-ar="الدهانات">الدهانات</span>
-      <span data-en="Plastics & Rubber" data-ar="البلاستيك والمطاط">البلاستيك والمطاط</span>
-      <span data-en="Textiles" data-ar="النسيج">النسيج</span>
-      <span data-en="Cosmetics" data-ar="مستحضرات التجميل">مستحضرات التجميل</span>
-      <span data-en="Agriculture" data-ar="الزراعة">الزراعة</span>
+      <span data-en="🎨 Coatings & Paints" data-ar="🎨 الدهانات">🎨 الدهانات</span>
+      <span data-en="🖨️ Printing Inks" data-ar="🖨️ الأحبار">🖨️ الأحبار</span>
+      <span data-en="🏗️ Construction" data-ar="🏗️ كيماويات البناء">🏗️ كيماويات البناء</span>
+      <span data-en="🧴 Adhesives" data-ar="🧴 المواد اللاصقة">🧴 المواد اللاصقة</span>
+      <span data-en="🛏️ Foam" data-ar="🛏️ الفوم">🛏️ الفوم</span>
+      <span data-en="💊 Pharma" data-ar="💊 الأدوية">💊 الأدوية</span>
+      <span data-en="🍞 Food" data-ar="🍞 الأغذية">🍞 الأغذية</span>
+      <span data-en="🧼 Home Care" data-ar="🧼 المنظفات والعناية المنزلية">🧼 المنظفات والعناية المنزلية</span>
+      <span data-en="💄 Personal Care" data-ar="💄 العناية الشخصية">💄 العناية الشخصية</span>
+      <span data-en="🧵 Plastics & Rubber" data-ar="🧵 البلاستيك والمطاط">🧵 البلاستيك والمطاط</span>
     </div>
   </div>
 </section>
 
-<section id="quote" class="section alt">
-  <div class="container narrow">
-    <h2 data-en="Request a Quote" data-ar="اطلب عرض سعر">اطلب عرض سعر</h2>
-    <p class="muted" data-en="Tell us what you need and we'll reply within one working day." data-ar="قولنا محتاج إيه وهنرد عليك خلال يوم عمل.">قولنا محتاج إيه وهنرد عليك خلال يوم عمل.</p>
+<!-- طلب عرض سعر + التواصل -->
+<section id="quote" class="section contact-wrap">
+  <div class="container contact">
+    <div class="contact-info" id="contact">
+      <span class="eyebrow light" data-en="Contact us" data-ar="تواصل معنا">تواصل معنا</span>
+      <h2 data-en="Let's talk about your needs" data-ar="خلّينا نتكلم عن اللي محتاجه">خلّينا نتكلم عن اللي محتاجه</h2>
+      <p data-en="Inquiries, partnerships or distribution — our team replies within one working day." data-ar="استفسارات، شراكات، أو توزيع — فريقنا بيرد خلال يوم عمل واحد.">استفسارات، شراكات، أو توزيع — فريقنا بيرد خلال يوم عمل واحد.</p>
+      <ul>
+        <li><small data-en="Email" data-ar="الإيميل">الإيميل</small><a class="js-email" href="#"><span class="js-email-text"></span></a></li>
+        <li><small data-en="Phone / WhatsApp" data-ar="تليفون / واتساب">تليفون / واتساب</small><a class="js-phone" href="#" dir="ltr"><span class="js-phone-text"></span></a></li>
+        <li><small data-en="Address" data-ar="العنوان">العنوان</small><span data-en="Cairo, Egypt" data-ar="القاهرة، مصر">القاهرة، مصر</span></li>
+        <li><small data-en="Working hours" data-ar="مواعيد العمل">مواعيد العمل</small><span data-en="Sat – Thu: 9:30 AM – 7:00 PM" data-ar="السبت – الخميس: 9:30 ص – 7:00 م">السبت – الخميس: 9:30 ص – 7:00 م</span></li>
+      </ul>
+    </div>
     <form id="quoteForm" class="form">
-      <input name="name" required placeholder="الاسم" data-en-ph="Name" data-ar-ph="الاسم">
-      <input name="company" placeholder="الشركة" data-en-ph="Company" data-ar-ph="الشركة">
-      <input name="phone" required type="tel" placeholder="رقم الموبايل" data-en-ph="Phone" data-ar-ph="رقم الموبايل">
+      <h3 data-en="Request a Quote" data-ar="اطلب عرض سعر">اطلب عرض سعر</h3>
+      <div class="two">
+        <input name="name" required placeholder="الاسم" data-en-ph="Name" data-ar-ph="الاسم">
+        <input name="company" placeholder="الشركة" data-en-ph="Company" data-ar-ph="الشركة">
+      </div>
+      <div class="two">
+        <input name="phone" required type="tel" placeholder="رقم الموبايل" data-en-ph="Phone" data-ar-ph="رقم الموبايل">
+        <input name="qty" placeholder="الكمية (مثال: 2 طن)" data-en-ph="Quantity (e.g. 2 tons)" data-ar-ph="الكمية (مثال: 2 طن)">
+      </div>
       <input name="product" id="productField" required placeholder="المنتج المطلوب" data-en-ph="Product needed" data-ar-ph="المنتج المطلوب">
-      <input name="qty" placeholder="الكمية (مثال: 2 طن)" data-en-ph="Quantity (e.g. 2 tons)" data-ar-ph="الكمية (مثال: 2 طن)">
-      <textarea name="notes" rows="3" placeholder="ملاحظات" data-en-ph="Notes" data-ar-ph="ملاحظات"></textarea>
+      <textarea name="notes" rows="3" placeholder="ملاحظات / مواصفات" data-en-ph="Notes / specs" data-ar-ph="ملاحظات / مواصفات"></textarea>
       <div class="form-btns">
         <button type="submit" class="btn primary" data-via="email" data-en="Send by Email" data-ar="إرسال بالإيميل">إرسال بالإيميل</button>
         <button type="submit" class="btn wa" data-via="whatsapp" data-en="Send on WhatsApp" data-ar="إرسال واتساب">إرسال واتساب</button>
@@ -124,23 +212,29 @@
   </div>
 </section>
 
-<section id="contact" class="section">
-  <div class="container contact-grid">
-    <div><h3 data-en="Sales" data-ar="المبيعات">المبيعات</h3><a href="mailto:sales@kemora.com">sales@kemora.com</a></div>
-    <div><h3 data-en="General" data-ar="استفسارات عامة">استفسارات عامة</h3><a href="mailto:info@kemora.com">info@kemora.com</a></div>
-    <div><h3 data-en="Phone / WhatsApp" data-ar="تليفون / واتساب">تليفون / واتساب</h3><a href="tel:+201000000000" dir="ltr">+20 100 000 0000</a></div>
-    <div><h3 data-en="Address" data-ar="العنوان">العنوان</h3><span data-en="Cairo, Egypt" data-ar="القاهرة، مصر">القاهرة، مصر</span></div>
-  </div>
-</section>
-
 <footer class="footer">
-  <div class="container">
-    <span>© <span id="year"></span> Kemora</span>
-    <span data-en="All rights reserved." data-ar="جميع الحقوق محفوظة.">جميع الحقوق محفوظة.</span>
+  <div class="container foot-grid">
+    <div>
+      <div class="brand light"><img src="assets/logo-mark.svg" alt="" width="36" height="36"><span class="brand-text"><b class="js-brand"></b></span></div>
+      <p data-en="Where chemistry drives innovation." data-ar="لما الكيمياء تقود الابتكار.">لما الكيمياء تقود الابتكار.</p>
+    </div>
+    <div>
+      <h4 data-en="Quick links" data-ar="روابط سريعة">روابط سريعة</h4>
+      <a href="#about" data-en="About" data-ar="من نحن">من نحن</a>
+      <a href="#services" data-en="Services" data-ar="خدماتنا">خدماتنا</a>
+      <a href="#products" data-en="Products" data-ar="المنتجات">المنتجات</a>
+      <a href="#quote" data-en="Get a Quote" data-ar="اطلب عرض سعر">اطلب عرض سعر</a>
+    </div>
+    <div>
+      <h4 data-en="Contact" data-ar="تواصل">تواصل</h4>
+      <a class="js-email" href="#"><span class="js-email-text"></span></a>
+      <a class="js-phone" href="#" dir="ltr"><span class="js-phone-text"></span></a>
+    </div>
   </div>
+  <div class="container copy">© <span id="year"></span> <span class="js-brand"></span> — <span data-en="All rights reserved." data-ar="جميع الحقوق محفوظة.">جميع الحقوق محفوظة.</span></div>
 </footer>
 
-<a class="wa-float" id="waFloat" href="#" aria-label="WhatsApp">
+<a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="WhatsApp">
   <svg viewBox="0 0 24 24" width="28" height="28" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.7-.1l2 .9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg>
 </a>
 
